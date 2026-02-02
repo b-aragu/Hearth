@@ -127,7 +127,7 @@ export function Hero() {
                         style={{ y: isMobile ? 0 : y1 }}
                         animate={activePhone === 0
                             ? { x: 0, scale: 1, zIndex: 30, rotateY: 0, rotateX: 0, filter: "brightness(100%)" }
-                            : { x: isMobile ? -70 : -120, scale: 0.85, zIndex: 10, rotateY: 25, rotateX: 5, filter: "brightness(90%)" }
+                            : { x: isMobile ? -30 : -60, scale: 0.9, zIndex: 10, rotateY: 15, rotateX: 5, filter: "brightness(95%)" }
                         }
                         transition={{ duration: 0.6, type: "spring", bounce: 0.3 }}
                         className="absolute w-[280px] lg:w-[340px] h-[600px] lg:h-[680px] bg-white rounded-[3rem] shadow-[0_20px_40px_rgba(0,0,0,0.15),0_40px_80px_rgba(255,154,162,0.2),inset_0_0_0_8px_rgba(255,255,255,0.5)] border-[8px] border-charcoal overflow-hidden cursor-pointer"
@@ -182,41 +182,35 @@ export function Hero() {
                                 <p className="text-sm text-charcoal/40 font-bold tracking-widest uppercase mt-1">Growing Strong</p>
                             </div>
 
-                            {/* Streak Section - "You're on Fire" Design */}
-                            <div className="bg-white/80 backdrop-blur-md rounded-[2.5rem] p-6 mb-6 shadow-[0_15px_30px_rgba(255,154,162,0.15)] border border-white/60 text-center relative overflow-hidden group/streak hover:scale-[1.02] transition-transform duration-300">
-                                <div className="text-[10px] font-bold text-coral/80 uppercase tracking-[0.2em] mb-2">You're on fire!</div>
-                                <div className="text-7xl font-black text-coral leading-none mb-1 tracking-tighter drop-shadow-sm">42</div>
-                                <div className="text-sm font-bold text-charcoal/40 mb-6">Day Streak</div>
-
-                                {/* Center Flame Effect */}
-                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-coral/10 rounded-full blur-3xl -z-10" />
-                                <motion.div
-                                    animate={{ scale: [1, 1.1, 1], opacity: [0.05, 0.1, 0.05] }}
-                                    transition={{ duration: 3, repeat: Infinity }}
-                                    className="absolute top-16 left-1/2 -translate-x-1/2 -translate-y-1/2 text-9xl opacity-10 pointer-events-none select-none grayscale-[0.5]"
-                                >🔥</motion.div>
-
-                                {/* Calendar Grid */}
-                                <div className="bg-white/90 rounded-2xl p-4 shadow-sm border border-charcoal/5 backdrop-blur-sm">
-                                    <div className="flex justify-between items-center mb-3">
-                                        <span className="text-xs font-bold text-charcoal">This Week</span>
-                                        <span className="text-[9px] font-bold text-coral bg-coral/10 px-2 py-1 rounded-full border border-coral/10">Perfect!</span>
-                                    </div>
-                                    <div className="grid grid-cols-7 gap-1">
-                                        {["M", "T", "W", "T", "F", "S", "S"].map((day, i) => (
-                                            <div key={i} className="flex flex-col items-center gap-1.5">
-                                                <div className={cn(
-                                                    "w-full aspect-square rounded-[6px] flex items-center justify-center text-[10px] shadow-sm transition-all",
-                                                    i < 5
-                                                        ? "bg-gradient-to-br from-coral to-peach text-white shadow-coral/20"
-                                                        : "bg-charcoal/5 text-transparent border border-black/5"
-                                                )}>
-                                                    {i < 5 && <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 1 + (i * 0.1) }}>🔥</motion.span>}
-                                                </div>
-                                                <span className="text-[8px] font-bold text-charcoal/30 font-dm-sans">{day}</span>
-                                            </div>
-                                        ))}
-                                    </div>
+                            {/* Streak Section */}
+                            <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-5 mb-4 border border-white/60 shadow-sm">
+                                <div className="flex justify-between items-end mb-2">
+                                    <span className="text-xs font-bold text-charcoal/50 uppercase">Current Streak</span>
+                                    <span className="text-xl font-black text-coral">5 Days</span>
+                                </div>
+                                <div className="flex justify-between gap-1 mb-3">
+                                    {[...Array(5)].map((_, i) => (
+                                        <motion.div
+                                            key={i}
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            transition={{ delay: 1 + (i * 0.1) }}
+                                            className="w-full aspect-square bg-coral rounded-lg flex items-center justify-center text-white text-xs shadow-sm"
+                                        >
+                                            🔥
+                                        </motion.div>
+                                    ))}
+                                    {[...Array(2)].map((_, i) => (
+                                        <div key={i} className="w-full aspect-square bg-black/5 rounded-lg border border-black/5" />
+                                    ))}
+                                </div>
+                                <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                                    <motion.div
+                                        initial={{ width: 0 }}
+                                        animate={{ width: "71%" }}
+                                        transition={{ delay: 1.5, duration: 1 }}
+                                        className="h-full bg-gradient-to-r from-coral to-peach"
+                                    />
                                 </div>
                             </div>
 
@@ -244,9 +238,9 @@ export function Hero() {
                         style={{ y: isMobile ? 0 : y2 }}
                         animate={activePhone === 1
                             ? { x: 0, scale: 1, zIndex: 30, rotateY: 0, rotateX: 0, filter: "brightness(100%)" }
-                            : { x: isMobile ? 70 : 120, scale: 0.85, zIndex: 10, rotateY: -25, rotateX: 5, filter: "brightness(90%)" }
+                            : { x: isMobile ? 30 : 60, scale: 0.9, zIndex: 10, rotateY: -15, rotateX: 5, filter: "brightness(95%)" }
                         }
-                        whileHover={activePhone === 0 ? { scale: 0.87, filter: "brightness(100%)" } : {}}
+                        whileHover={activePhone === 0 ? { scale: 0.92, filter: "brightness(100%)" } : {}}
                         transition={{ duration: 0.6, type: "spring", bounce: 0.3 }}
                         className="absolute w-[280px] lg:w-[340px] h-[560px] lg:h-[680px] bg-white rounded-[2.5rem] shadow-2xl border-[6px] border-charcoal/90 overflow-hidden cursor-pointer"
                     >

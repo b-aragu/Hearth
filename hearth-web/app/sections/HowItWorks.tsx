@@ -35,9 +35,8 @@ export function HowItWorks() {
     return (
         <section ref={containerRef} className="py-32 px-6 relative overflow-hidden bg-white/50" id="how-it-works">
             {/* Background Decorations */}
-            {/* Background Decorations - Optimized for Mobile Speed (Hidden/Reduced) */}
-            <div className="absolute top-0 left-1/4 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-coral/5 rounded-full blur-[60px] md:blur-[100px] -z-10 opacity-50 md:opacity-100" />
-            <div className="absolute bottom-0 right-1/4 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-mint/5 rounded-full blur-[60px] md:blur-[100px] -z-10 opacity-50 md:opacity-100" />
+            <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-coral/5 rounded-full blur-[100px] -z-10" />
+            <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-mint/5 rounded-full blur-[100px] -z-10" />
 
             <div className="max-w-7xl mx-auto relative z-10">
                 <div className="text-center mb-24">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, ArrowRight, Check } from "lucide-react";
 import { cn } from "@/app/lib/utils";
@@ -67,18 +67,6 @@ const creatures = [
 export function CreatureSelector() {
     const [selected, setSelected] = useState(creatures[0].id);
     const [hovered, setHovered] = useState<string | null>(null);
-    const [activeIndex, setActiveIndex] = useState(0);
-    const scrollRef = useRef<HTMLDivElement>(null);
-
-    const handleScroll = () => {
-        if (scrollRef.current) {
-            const index = Math.round(scrollRef.current.scrollLeft / (scrollRef.current.clientWidth * 0.6)); // approx for snap
-            // Better: measure card width.
-            const cardWidth = scrollRef.current.children[0]?.clientWidth || scrollRef.current.clientWidth;
-            const newIndex = Math.round(scrollRef.current.scrollLeft / cardWidth);
-            setActiveIndex(newIndex);
-        }
-    };
 
     return (
         <section className="py-24 px-4 relative overflow-hidden bg-[#FFF9F0]" id="companions">
@@ -119,11 +107,7 @@ export function CreatureSelector() {
                     </motion.p>
                 </div>
 
-                <div
-                    ref={scrollRef}
-                    onScroll={handleScroll}
-                    className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-12 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8 px-4 -mx-4 md:mx-0 scrollbar-hide"
-                >
+                <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-12 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8 px-4 -mx-4 md:mx-0 scrollbar-hide">
                     {creatures.map((creature, index) => {
                         const isSelected = selected === creature.id;
                         const isHovered = hovered === creature.id;
@@ -199,22 +183,6 @@ export function CreatureSelector() {
                                     </AnimatePresence>
                                 </div>
 
-                                {/* Persistent Evolution Display on Selection (Mobile Friendly) */}
-                                {isSelected && (
-                                    <motion.div
-                                        initial={{ opacity: 0, height: 0 }}
-                                        animate={{ opacity: 1, height: "auto" }}
-                                        className="flex items-center justify-center gap-4 mb-6"
-                                    >
-                                        {creature.evolution.map((evo, i) => (
-                                            <div key={i} className="flex flex-col items-center gap-1">
-                                                <span className="text-2xl">{evo}</span>
-                                                <div className="h-1 w-1 rounded-full bg-charcoal/10" />
-                                            </div>
-                                        ))}
-                                    </motion.div>
-                                )}
-
                                 {/* Content */}
                                 <div className="relative z-10 w-full max-w-[280px]">
                                     <h3 className="text-2xl font-outfit font-bold text-charcoal mb-3">{creature.name}</h3>
@@ -250,28 +218,6 @@ export function CreatureSelector() {
                             </motion.div>
                         );
                     })}
-                </div>
-
-                {/* Mobile Dots Indicator */}
-                <div className="flex justify-center gap-2 mt-4 md:hidden">
-                    {creatures.map((_, i) => (
-                        <motion.button
-                            key={i}
-                            onClick={() => {
-                                if (scrollRef.current) {
-                                    scrollRef.current.scrollTo({
-                                        left: i * scrollRef.current.clientWidth, // Close enough
-                                        behavior: "smooth"
-                                    });
-                                }
-                            }}
-                            className={cn(
-                                "h-2 rounded-full transition-all duration-300",
-                                i === activeIndex ? "w-6 bg-coral" : "w-2 bg-charcoal/20"
-                            )}
-                            animate={{ scale: i === activeIndex ? 1 : 0.8 }}
-                        />
-                    ))}
                 </div>
 
                 <div className="mt-20 text-center">

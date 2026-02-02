@@ -178,21 +178,21 @@ function StreaksVisual() {
                     </div>
                 </div>
 
-                <div className="bg-white p-5 rounded-3xl shadow-lg border border-coral/10 w-full max-w-[280px]">
-                    <div className="flex justify-between items-center mb-4">
-                        <span className="text-xs font-bold text-charcoal/80">This Week</span>
-                        <span className="text-xs font-bold text-coral bg-coral/10 px-2 py-1 rounded-full">Perfect!</span>
+                <div className="bg-white p-3 rounded-3xl shadow-lg border border-coral/10 w-full max-w-[280px]">
+                    <div className="flex justify-between items-center mb-3">
+                        <span className="text-[10px] font-bold text-charcoal/80">This Week</span>
+                        <span className="text-[9px] font-bold text-coral bg-coral/10 px-2 py-1 rounded-full">Perfect!</span>
                     </div>
-                    <div className="flex justify-between gap-1.5">
+                    <div className="grid grid-cols-7 gap-[2px]">
                         {["M", "T", "W", "T", "F", "S", "S"].map((day, i) => (
-                            <div key={i} className="flex flex-col items-center gap-1.5">
+                            <div key={i} className="flex flex-col items-center gap-1">
                                 <div className={cn(
-                                    "w-8 h-10 rounded-lg flex items-center justify-center text-[10px] font-bold shadow-sm transition-transform hover:scale-110",
-                                    "bg-gradient-to-b from-coral to-orange-500 text-white"
+                                    "w-full aspect-square rounded-md flex items-center justify-center text-[10px] font-bold shadow-sm transition-transform hover:scale-105",
+                                    i < 5 ? "bg-gradient-to-b from-coral to-orange-500 text-white" : "bg-gray-100 text-gray-300"
                                 )}>
-                                    <Flame className="w-3.5 h-3.5 fill-white" />
+                                    {i < 5 && <Flame className="w-3 h-3 fill-white" />}
                                 </div>
-                                <span className="text-[10px] text-charcoal/60 font-bold">{day}</span>
+                                <span className="text-[8px] text-charcoal/60 font-bold">{day}</span>
                             </div>
                         ))}
                     </div>
