@@ -39,7 +39,7 @@ export function FAQ() {
                     <Sparkles className="w-6 h-6" />
                 </div>
                 <h2 className="text-4xl lg:text-5xl font-outfit font-bold text-charcoal mb-4">Curious Minds</h2>
-                <p className="text-charcoal/60 font-medium font-dm-sans text-lg">Everything you need to know before you start your streaks.</p>
+                <p className="text-charcoal/60 font-medium font-dm-sans text-lg">Common questions about raising your digital pet together.</p>
             </div>
 
             <div className="space-y-4">

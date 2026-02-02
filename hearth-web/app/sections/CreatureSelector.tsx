@@ -98,7 +98,7 @@ export function CreatureSelector() {
                         transition={{ delay: 0.1 }}
                         className="text-4xl md:text-5xl font-outfit font-bold text-charcoal mb-6"
                     >
-                        Grow <span className="text-transparent bg-clip-text bg-gradient-to-r from-coral to-peach">Together.</span>
+                        Choose. Name. <span className="text-transparent bg-clip-text bg-gradient-to-r from-coral to-peach">Raise.</span>
                     </motion.h2>
 
                     <motion.p
@@ -108,7 +108,7 @@ export function CreatureSelector() {
                         transition={{ delay: 0.2 }}
                         className="text-lg text-charcoal/60 font-dm-sans max-w-2xl mx-auto leading-relaxed"
                     >
-                        Pick a pet to raise with your partner. It evolves as you grow closer.
+                        Find the little one that melts your heart. You'll name them, care for them, and watch them grow together.
                     </motion.p>
 
                     {/* Mobile Swipe Hint */}

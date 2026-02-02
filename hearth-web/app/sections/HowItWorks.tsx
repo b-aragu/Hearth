@@ -50,7 +50,7 @@ export function HowItWorks() {
                         <span className="text-[11px] font-bold text-charcoal/60 uppercase tracking-wider font-dm-sans">Simple Ritual</span>
                     </motion.div>
                     <h2 className="text-4xl lg:text-5xl font-outfit font-bold text-charcoal mb-6">Simple, Daily <span className="text-transparent bg-clip-text bg-gradient-to-r from-coral to-peach">Magic</span></h2>
-                    <p className="text-charcoal/60 text-lg lg:text-xl font-dm-sans max-w-2xl mx-auto">Three steps to a consistently stronger relationship. No pressure, just connection.</p>
+                    <p className="text-charcoal/60 text-lg lg:text-xl font-dm-sans max-w-2xl mx-auto">Three simple steps to grow your pet and your bond. No pressure, just fun.</p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 relative">

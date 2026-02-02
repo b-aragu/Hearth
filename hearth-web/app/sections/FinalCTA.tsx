@@ -32,7 +32,7 @@ export function FinalCTA() {
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-coral to-orange-500">Together.</span>
                     </h2>
                     <p className="text-xl text-charcoal/60 font-dm-sans max-w-2xl mx-auto leading-relaxed mb-12">
-                        Hearth is evolving. Help us shape the future of digital intimacy.
+                        Hearth is growing. Help us build the best home for your virtual pet.
                         Vote on features you want to see and get early access.
                     </p>
                 </motion.div>

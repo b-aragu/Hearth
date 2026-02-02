@@ -58,7 +58,7 @@ export function Features() {
                 <div className="text-center mb-12 lg:mb-20">
                     <h2 className="text-4xl lg:text-5xl font-outfit font-bold text-charcoal mb-6">More Than Just an App</h2>
                     <p className="text-lg lg:text-xl text-charcoal/70 font-dm-sans max-w-2xl mx-auto font-medium">
-                        OurHaven is built to fit seamlessly into your life, turning small moments into lasting memories.
+                        Hearth fits into your day. Raise your pet without disrupting your routine.
                     </p>
                 </div>
 

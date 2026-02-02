@@ -86,7 +86,7 @@ export function Hero() {
                         transition={{ delay: 0.5 }}
                         className="text-lg lg:text-xl text-charcoal/70 font-dm-sans leading-relaxed mb-10 max-w-lg mx-auto lg:mx-0"
                     >
-                        Raise a virtual pet with your partner. Grow closer every day.
+                        Raise a digital pet with your partner. It grows when you send love, right in your phone.
                     </motion.p>
 
                     {/* CTAs */}
