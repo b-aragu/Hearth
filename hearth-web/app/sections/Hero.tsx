@@ -26,23 +26,23 @@ export function Hero() {
             {/* --- Background Enhancements --- */}
             {/* Multi-layer Animated Gradients */}
             <div className="absolute inset-0 bg-[#FFF9F0] transition-colors duration-1000 -z-30" />
-            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay -z-20 pointer-events-none" />
+            <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay -z-20 pointer-events-none" />
 
             {/* Mesh Gradient Orbs */}
             <motion.div
                 animate={{ y: [0, 20, 0], rotate: [0, 5, 0] }}
                 transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-coral/20 rounded-full blur-[100px] -z-20 mix-blend-multiply"
+                className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-coral/20 rounded-full blur-[100px] -z-20 mix-blend-multiply will-change-transform"
             />
             <motion.div
                 animate={{ y: [0, -30, 0], x: [0, 20, 0] }}
                 transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute bottom-[-10%] left-[-10%] w-[700px] h-[700px] bg-lavender/25 rounded-full blur-[120px] -z-20 mix-blend-multiply"
+                className="absolute bottom-[-10%] left-[-10%] w-[700px] h-[700px] bg-lavender/25 rounded-full blur-[120px] -z-20 mix-blend-multiply will-change-transform"
             />
             <motion.div
                 animate={{ scale: [1, 1.1, 1], rotate: [0, -10, 0] }}
                 transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-[20%] left-[30%] w-[500px] h-[500px] bg-mint/20 rounded-full blur-[100px] -z-20 mix-blend-multiply"
+                className="absolute top-[20%] left-[30%] w-[500px] h-[500px] bg-mint/20 rounded-full blur-[100px] -z-20 mix-blend-multiply will-change-transform"
             />
 
             <div className="max-w-[1400px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 w-full relative z-10">

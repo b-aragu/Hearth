@@ -7,7 +7,7 @@ import { cn } from "@/app/lib/utils";
 
 export function FinalCTA() {
     return (
-        <section id="cta" className="relative py-32 px-4 overflow-hidden flex flex-col items-center justify-center text-center">
+        <section id="cta" className="relative py-20 lg:py-32 px-4 overflow-hidden flex flex-col items-center justify-center text-center">
             {/* Background Gradients */}
             <div className="absolute inset-0 bg-gradient-to-t from-coral/5 via-[#FFF9F0] to-white -z-20" />
             <div className="absolute bottom-0 left-0 w-full h-[500px] bg-gradient-to-t from-white to-transparent -z-10" />
@@ -27,7 +27,7 @@ export function FinalCTA() {
                         <Sparkles className="w-3.5 h-3.5" />
                         Join the Beta
                     </span>
-                    <h2 className="text-5xl md:text-7xl font-outfit font-extrabold text-charcoal mb-6 tracking-tight leading-tight">
+                    <h2 className="text-4xl md:text-5xl lg:text-7xl font-outfit font-extrabold text-charcoal mb-6 tracking-tight leading-tight">
                         Build Your Haven. <br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-coral to-orange-500">Together.</span>
                     </h2>

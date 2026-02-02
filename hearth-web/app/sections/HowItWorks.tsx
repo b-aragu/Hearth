@@ -33,13 +33,13 @@ export function HowItWorks() {
     const containerRef = useRef<HTMLDivElement>(null);
 
     return (
-        <section ref={containerRef} className="py-32 px-6 relative overflow-hidden bg-white/50" id="how-it-works">
+        <section ref={containerRef} className="py-16 lg:py-32 px-6 relative overflow-hidden bg-white/50" id="how-it-works">
             {/* Background Decorations */}
             <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-coral/5 rounded-full blur-[100px] -z-10" />
             <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-mint/5 rounded-full blur-[100px] -z-10" />
 
             <div className="max-w-7xl mx-auto relative z-10">
-                <div className="text-center mb-24">
+                <div className="text-center mb-16 lg:mb-24">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}

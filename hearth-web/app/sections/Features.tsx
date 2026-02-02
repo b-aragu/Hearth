@@ -49,13 +49,13 @@ export function Features() {
     const activeFeature = features.find(f => f.id === activeTab) || features[0];
 
     return (
-        <section className="py-32 px-6 bg-[#FCF8F5] relative overflow-hidden" id="features">
+        <section className="py-16 lg:py-32 px-6 bg-[#FCF8F5] relative overflow-hidden" id="features">
             {/* Background Decoration - Stronger gradients */}
             <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-peach/30 rounded-full blur-[80px] -z-10 mix-blend-multiply" />
             <div className="absolute bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-lavender/30 rounded-full blur-[80px] -z-10 mix-blend-multiply" />
 
             <div className="max-w-7xl mx-auto">
-                <div className="text-center mb-20">
+                <div className="text-center mb-12 lg:mb-20">
                     <h2 className="text-4xl lg:text-5xl font-outfit font-bold text-charcoal mb-6">More Than Just an App</h2>
                     <p className="text-lg lg:text-xl text-charcoal/70 font-dm-sans max-w-2xl mx-auto font-medium">
                         OurHaven is built to fit seamlessly into your life, turning small moments into lasting memories.
@@ -122,7 +122,7 @@ export function Features() {
                             activeFeature.gradient
                         )} />
 
-                        <div className="relative w-[340px] aspect-[9/19] bg-charcoal rounded-[3.5rem] p-3 shadow-2xl ring-8 ring-charcoal/10 transform transition-transform duration-500 hover:scale-[1.01] z-10 drop-shadow-2xl">
+                        <div className="relative w-full max-w-[340px] aspect-[9/19] bg-charcoal rounded-[3.5rem] p-3 shadow-2xl ring-8 ring-charcoal/10 transform transition-transform duration-500 hover:scale-[1.01] z-10 drop-shadow-2xl">
                             {/* Phone Notch/Island */}
                             <div className="absolute top-0 left-1/2 -translate-x-1/2 h-8 w-32 bg-black rounded-b-2xl z-50 flex items-center justify-center gap-2 pointer-events-none">
                                 <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
@@ -167,14 +167,14 @@ function StreaksVisual() {
         <div className="w-full h-full bg-[#FFF5F0] flex flex-col relative overflow-hidden">
             <div className="flex-1 flex flex-col items-center justify-center p-6 text-center z-10">
                 <div className="mb-3 uppercase tracking-widest text-[10px] font-extrabold text-coral mt-8">You're on fire!</div>
-                <div className="text-6xl font-outfit font-bold text-coral mb-1 tracking-tight">42</div>
+                <div className="text-5xl lg:text-6xl font-outfit font-bold text-coral mb-1 tracking-tight">42</div>
                 <div className="text-charcoal/60 font-dm-sans font-bold text-sm mb-10">Day Streak</div>
 
-                <div className="relative w-48 h-48 flex items-center justify-center mb-10">
+                <div className="relative w-32 h-32 lg:w-48 lg:h-48 flex items-center justify-center mb-10">
                     <div className="absolute inset-0 bg-coral/10 rounded-full animate-pulse" />
                     <div className="absolute inset-6 bg-coral/20 rounded-full animate-pulse delay-100" />
-                    <div className="bg-gradient-to-br from-coral to-red-500 w-32 h-32 rounded-full flex items-center justify-center shadow-xl shadow-coral/40 ring-4 ring-white z-10">
-                        <Flame className="w-16 h-16 text-white fill-white drop-shadow-md" />
+                    <div className="bg-gradient-to-br from-coral to-red-500 w-20 h-20 lg:w-32 lg:h-32 rounded-full flex items-center justify-center shadow-xl shadow-coral/40 ring-4 ring-white z-10">
+                        <Flame className="w-10 h-10 lg:w-16 lg:h-16 text-white fill-white drop-shadow-md" />
                     </div>
                 </div>
 

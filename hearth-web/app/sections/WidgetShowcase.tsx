@@ -35,7 +35,7 @@ export function WidgetShowcase() {
     };
 
     return (
-        <section className="py-32 px-6 bg-[#0B0B11] relative overflow-hidden text-white perspective-[2000px]" id="widgets">
+        <section className="py-16 lg:py-32 px-6 bg-[#0B0B11] relative overflow-hidden text-white perspective-[2000px]" id="widgets">
             {/* Ambient Background Lighting */}
             <div className="absolute top-[-20%] left-[-10%] w-[900px] h-[900px] bg-indigo-600/10 rounded-full blur-[140px] pointer-events-none animate-pulse-slow" />
             <div className="absolute bottom-[-20%] right-[-10%] w-[900px] h-[900px] bg-purple-600/10 rounded-full blur-[140px] pointer-events-none animate-pulse-slow delay-1000" />
@@ -43,7 +43,7 @@ export function WidgetShowcase() {
             <NightParticles />
 
             <div className="max-w-7xl mx-auto relative z-10">
-                <div className="text-center mb-24">
+                <div className="text-center mb-16 lg:mb-24">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -53,25 +53,25 @@ export function WidgetShowcase() {
                         <Moon className="w-3.5 h-3.5 text-purple-300 fill-purple-300" />
                         <span className="text-[11px] font-bold text-white/80 uppercase tracking-wider font-dm-sans">Night Mode Ready</span>
                     </motion.div>
-                    <h2 className="text-5xl lg:text-6xl font-outfit font-bold mb-6 bg-gradient-to-br from-white via-white to-white/40 bg-clip-text text-transparent">Always Connected</h2>
-                    <p className="text-white/50 text-xl lg:text-2xl font-dm-sans max-w-2xl mx-auto font-light leading-relaxed">
+                    <h2 className="text-4xl lg:text-6xl font-outfit font-bold mb-6 bg-gradient-to-br from-white via-white to-white/40 bg-clip-text text-transparent">Always Connected</h2>
+                    <p className="text-white/50 text-lg lg:text-2xl font-dm-sans max-w-2xl mx-auto font-light leading-relaxed">
                         Keep your companion—and your partner—close. <br className="hidden md:block" /> No checking feeds, just checking in.
                     </p>
                 </div>
 
-                <div className="flex flex-col lg:flex-row items-center justify-center gap-20 lg:gap-32">
+                <div className="flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-32">
 
                     {/* Interactive 3D Phone Mockup */}
                     <motion.div
                         onMouseMove={handleMouseMove}
                         onMouseLeave={handleMouseLeave}
                         style={{ rotateX, rotateY, filter: `brightness(${brightness})` }}
-                        className="relative group cursor-pointer"
+                        className="relative group cursor-pointer w-full max-w-[360px]"
                     >
                         {/* Glow behind phone */}
                         <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/30 to-purple-500/30 blur-[80px] rounded-full scale-110 group-hover:scale-125 transition-transform duration-700" />
 
-                        <div className="relative w-[360px] h-[720px] bg-black rounded-[4rem] border-[10px] border-[#1f1f22] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col justify-between p-7 transform-style-3d">
+                        <div className="relative w-full aspect-[9/18] bg-black rounded-[2.5rem] md:rounded-[4rem] border-[8px] md:border-[10px] border-[#1f1f22] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col justify-between p-5 md:p-7 transform-style-3d">
                             {/* Glass Reflection */}
                             <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent z-50 pointer-events-none opacity-50 rounded-[3.5rem]" />
 

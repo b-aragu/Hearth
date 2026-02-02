@@ -33,7 +33,7 @@ const faqs = [
 
 export function FAQ() {
     return (
-        <section className="py-24 px-6 max-w-4xl mx-auto" id="faq">
+        <section className="py-16 lg:py-24 px-6 max-w-4xl mx-auto" id="faq">
             <div className="text-center mb-16">
                 <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-lavender/20 text-purple-500 mb-6">
                     <Sparkles className="w-6 h-6" />

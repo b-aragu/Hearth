@@ -108,11 +108,21 @@ export function CreatureSelector() {
                         transition={{ delay: 0.2 }}
                         className="text-lg text-charcoal/60 font-dm-sans max-w-2xl mx-auto leading-relaxed"
                     >
-                        Pick a companion that reflects your bond. As you nurture your relationship, it evolves with you.
+                        Pick a companion that reflects your bond. <span className="md:hidden">Swipe to explore them all.</span><span className="hidden md:inline">Choose wisely!</span> As you nurture your relationship, it evolves with you.
                     </motion.p>
+
+                    {/* Mobile Swipe Hint */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1, x: [0, 10, 0] }}
+                        transition={{ delay: 1, duration: 2, repeat: Infinity }}
+                        className="flex items-center justify-center gap-2 mt-6 md:hidden text-coral font-bold text-sm"
+                    >
+                        Swipe to Explore <ArrowRight className="w-4 h-4" />
+                    </motion.div>
                 </div>
 
-                <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-12 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8 px-4 -mx-4 md:mx-0 scrollbar-hide">
+                <div className="flex overflow-x-auto gap-4 pb-12 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8 px-4 -mx-4 md:mx-0 scrollbar-hide overscroll-x-contain">
                     {creatures.map((creature, index) => {
                         const isSelected = selected === creature.id;
                         const isHovered = hovered === creature.id;
@@ -129,7 +139,7 @@ export function CreatureSelector() {
                                 onClick={() => setSelected(creature.id)}
                                 className={cn(
                                     "relative rounded-[2.5rem] p-8 lg:p-10 cursor-pointer transition-all duration-300 border overflow-hidden group flex flex-col items-center text-center",
-                                    "min-w-[85vw] md:min-w-0 snap-center shrink-0", // Mobile Carousel Sizing
+                                    "min-w-[85vw] md:min-w-0 shrink-0", // Mobile Carousel Sizing - No Snap
                                     isSelected
                                         ? `border-${creature.color.replace("bg-", "")}/30 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] scale-[1.01] z-10 bg-white`
                                         : "border-transparent bg-white/40 hover:bg-white/90 hover:shadow-lg hover:-translate-y-1 hover:border-white/50"
