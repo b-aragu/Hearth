@@ -104,10 +104,10 @@ export function WidgetShowcase() {
                             <div className="flex justify-center gap-4 mt-8 z-10">
                                 <motion.div
                                     whileHover={{ scale: 1.05 }}
-                                    className="w-16 h-16 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 flex flex-col items-center justify-center shadow-lg cursor-pointer hover:bg-white/10 transition-colors"
+                                    className="w-16 h-16 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 flex flex-col items-center justify-center shadow-lg cursor-pointer hover:bg-white/10 transition-colors overflow-hidden"
                                 >
-                                    <div className="scale-75 mb-1"><Creature emoji="🐶" size="sm" animated={true} /></div>
-                                    <span className="text-[9px] font-bold text-white/80">Lvl 5</span>
+                                    <div className="scale-75 -mb-1"><Creature emoji="🐶" size="sm" animated={false} /></div>
+                                    <span className="text-[9px] font-bold text-white/80 leading-none mt-1">Lvl 5</span>
                                 </motion.div>
                                 <motion.div
                                     whileHover={{ scale: 1.05 }}
