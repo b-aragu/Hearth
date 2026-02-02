@@ -2,7 +2,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Button } from "@/app/components/ui/Button";
-import { Play, ArrowRight, Heart } from "lucide-react";
+import { Play, ArrowRight, Heart, Check } from "lucide-react";
 import { cn } from "@/app/lib/utils";
 import { Creature } from "@/app/components/ui/Creature";
 
@@ -127,7 +127,7 @@ export function Hero() {
                         style={{ y: isMobile ? 0 : y1 }}
                         animate={activePhone === 0
                             ? { x: 0, scale: 1, zIndex: 30, rotateY: 0, rotateX: 0, filter: "brightness(100%)" }
-                            : { x: isMobile ? -30 : -60, scale: 0.9, zIndex: 10, rotateY: 15, rotateX: 5, filter: "brightness(95%)" }
+                            : { x: isMobile ? -50 : -60, scale: 0.9, zIndex: 10, rotateY: 15, rotateX: 5, filter: "brightness(95%)" }
                         }
                         transition={{ duration: 0.6, type: "spring", bounce: 0.3 }}
                         className="absolute w-[280px] lg:w-[340px] h-[600px] lg:h-[680px] bg-white rounded-[3rem] shadow-[0_20px_40px_rgba(0,0,0,0.15),0_40px_80px_rgba(255,154,162,0.2),inset_0_0_0_8px_rgba(255,255,255,0.5)] border-[8px] border-charcoal overflow-hidden cursor-pointer"
@@ -145,87 +145,98 @@ export function Hero() {
                         </div>
 
                         {/* Screen Content - Scaled Down Slightly */}
-                        <div className="w-full h-full bg-[#FFF5F5] relative flex flex-col pt-12 px-6 scale-[0.95] origin-top">
+                        <div className="w-full h-full bg-[#FFF5F5] relative flex flex-col pt-8 px-5 scale-[0.85] origin-top">
                             {/* Top Bar */}
-                            <div className="flex justify-between items-center mb-8">
-                                <span className="font-bold font-outfit text-charcoal">OurHaven</span>
-                                <div className="flex items-center gap-1 bg-white/60 px-2 py-1 rounded-full border border-black/5">
-                                    <span className="w-2 h-2 rounded-full bg-coral animate-pulse" />
-                                    <span className="text-[10px] font-bold text-coral">LEVEL 5</span>
+                            <div className="flex justify-between items-center mb-2 pl-1">
+                                <span className="font-bold font-outfit text-charcoal text-lg tracking-tight">OurHaven</span>
+                                <div className="flex items-center gap-1.5 bg-white/60 px-2.5 py-1 rounded-full border border-black/5 shadow-sm backdrop-blur-sm">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-coral animate-pulse" />
+                                    <span className="text-[9px] font-bold text-coral tracking-widest uppercase">Level 5</span>
                                 </div>
                             </div>
 
                             {/* Main Character Area */}
-                            <div className="flex-1 flex flex-col items-center justify-center relative -mt-10">
+                            <div className="flex-1 flex flex-col items-center justify-start relative pt-1">
                                 <motion.div
                                     animate={{
-                                        scale: [1, 1.05, 1],
+                                        scale: [1, 1.02, 1],
                                         rotate: [0, 1, -1, 0]
                                     }}
                                     transition={{
                                         scale: { duration: 4, repeat: Infinity, ease: "easeInOut" },
                                         rotate: { duration: 6, repeat: Infinity, ease: "easeInOut" }
                                     }}
-                                    className="relative"
+                                    className="relative mb-1 shrink-0 scale-75"
                                 >
-                                    <Creature emoji="🐻" size="xl" animated={false} /> {/* Custom animation handled by parent motion.div */}
+                                    <Creature emoji="🐻" size="xl" animated={false} />
 
                                     {/* Floating Hearts from Bear */}
                                     <motion.div
-                                        animate={{ y: -60, opacity: [0, 1, 0], x: [0, 10, -10] }}
+                                        animate={{ y: -40, opacity: [0, 1, 0], x: [0, 10, -10] }}
                                         transition={{ duration: 3, repeat: Infinity, ease: "easeOut" }}
-                                        className="absolute top-0 right-0 text-2xl"
+                                        className="absolute top-2 right-4 text-xl"
                                     >♥</motion.div>
                                 </motion.div>
 
-                                <h3 className="text-2xl font-bold font-outfit text-charcoal mt-6">Barnaby</h3>
-                                <p className="text-sm text-charcoal/40 font-bold tracking-widest uppercase mt-1">Growing Strong</p>
+                                <h3 className="text-xl font-bold font-outfit text-charcoal mb-1">Barnaby</h3>
+                                <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-white/50 rounded-full border border-black/5 mb-2">
+                                    <div className="w-1 h-1 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)]" />
+                                    <span className="text-[9px] text-charcoal/60 font-bold tracking-widest uppercase">Growing Strong</span>
+                                </div>
                             </div>
 
-                            {/* Streak Section */}
-                            <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-5 mb-4 border border-white/60 shadow-sm">
-                                <div className="flex justify-between items-end mb-2">
-                                    <span className="text-xs font-bold text-charcoal/50 uppercase">Current Streak</span>
-                                    <span className="text-xl font-black text-coral">5 Days</span>
-                                </div>
-                                <div className="flex justify-between gap-1 mb-3">
-                                    {[...Array(5)].map((_, i) => (
+                            {/* Streak Section - Redesigned for cleaner look */}
+                            <div className="bg-white rounded-3xl p-3 mb-2 border border-stone-100 shadow-md shadow-coral/5 relative overflow-hidden shrink-0">
+                                <div className="absolute top-0 right-0 w-24 h-24 bg-coral/5 rounded-bl-[4rem] -z-10 transition-transform group-hover:scale-110" />
+
+                                <div className="flex flex-col items-center text-center">
+                                    <span className="text-[9px] font-bold text-charcoal/50 uppercase tracking-widest mb-0.5">Current Streak</span>
+                                    <div className="flex items-baseline gap-1 mb-1.5">
+                                        <span className="text-2xl font-outfit font-bold text-coral">5</span>
+                                        <span className="text-base font-bold text-coral/80">Days</span>
+                                    </div>
+
+                                    <div className="flex justify-center gap-1 mb-1.5 w-full max-w-[160px]">
+                                        {[...Array(5)].map((_, i) => (
+                                            <motion.div
+                                                key={i}
+                                                initial={{ scale: 0 }}
+                                                animate={{ scale: 1 }}
+                                                transition={{ delay: 1 + (i * 0.1) }}
+                                                className="w-5 h-5 bg-gradient-to-br from-coral to-orange-400 rounded-full flex items-center justify-center text-white text-[9px] shadow-sm"
+                                            >
+                                                🔥
+                                            </motion.div>
+                                        ))}
+                                        {[...Array(2)].map((_, i) => (
+                                            <div key={i} className="w-5 h-5 bg-black/5 rounded-full border border-black/5" />
+                                        ))}
+                                    </div>
+
+                                    {/* Progress Bar */}
+                                    <div className="w-full max-w-[140px] h-1 bg-gray-100 rounded-full overflow-hidden mt-0.5">
                                         <motion.div
-                                            key={i}
-                                            initial={{ scale: 0 }}
-                                            animate={{ scale: 1 }}
-                                            transition={{ delay: 1 + (i * 0.1) }}
-                                            className="w-full aspect-square bg-coral rounded-lg flex items-center justify-center text-white text-xs shadow-sm"
-                                        >
-                                            🔥
-                                        </motion.div>
-                                    ))}
-                                    {[...Array(2)].map((_, i) => (
-                                        <div key={i} className="w-full aspect-square bg-black/5 rounded-lg border border-black/5" />
-                                    ))}
-                                </div>
-                                <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
-                                    <motion.div
-                                        initial={{ width: 0 }}
-                                        animate={{ width: "71%" }}
-                                        transition={{ delay: 1.5, duration: 1 }}
-                                        className="h-full bg-gradient-to-r from-coral to-peach"
-                                    />
+                                            initial={{ width: 0 }}
+                                            animate={{ width: "71%" }}
+                                            transition={{ delay: 1.5, duration: 1 }}
+                                            className="h-full bg-gradient-to-r from-coral to-peach rounded-full"
+                                        />
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* Check-in Status */}
-                            <div className="bg-white rounded-3xl p-4 mb-8 flex items-center gap-4 shadow-[0_8px_20px_rgba(0,0,0,0.04)] border border-black/5">
-                                <div className="flex -space-x-3">
-                                    <div className="w-10 h-10 rounded-full bg-lavender border-2 border-white flex items-center justify-center">You</div>
-                                    <div className="w-10 h-10 rounded-full bg-mint border-2 border-white flex items-center justify-center">Al</div>
+                            {/* Check-in Status - Minimizing to save space if needed or polishing */}
+                            <div className="bg-white rounded-[1.5rem] p-2.5 mb-2 flex items-center gap-2.5 shadow-sm border border-black/5 shrink-0 transform hover:scale-[1.02] transition-transform cursor-pointer">
+                                <div className="flex -space-x-2">
+                                    <div className="w-7 h-7 rounded-full bg-lavender border-2 border-white flex items-center justify-center text-[9px] font-bold shadow-sm text-purple-600">You</div>
+                                    <div className="w-7 h-7 rounded-full bg-mint border-2 border-white flex items-center justify-center text-[9px] font-bold shadow-sm text-teal-600">Al</div>
                                 </div>
-                                <div className="flex-1">
-                                    <div className="text-sm font-bold text-charcoal">All checked in!</div>
-                                    <div className="text-xs text-charcoal/50">Great job today ✨</div>
+                                <div className="flex-1 text-left">
+                                    <div className="text-xs font-bold text-charcoal leading-tight">All checked in!</div>
+                                    <div className="text-[9px] text-charcoal/50 font-medium">Great job today ✨</div>
                                 </div>
-                                <div className="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
-                                    <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 2 }}>✓</motion.div>
+                                <div className="w-6 h-6 rounded-full bg-green-100/50 text-green-600 flex items-center justify-center border border-green-200/30">
+                                    <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 2 }}><Check className="w-3 h-3" /></motion.div>
                                 </div>
                             </div>
                         </div>
@@ -238,7 +249,7 @@ export function Hero() {
                         style={{ y: isMobile ? 0 : y2 }}
                         animate={activePhone === 1
                             ? { x: 0, scale: 1, zIndex: 30, rotateY: 0, rotateX: 0, filter: "brightness(100%)" }
-                            : { x: isMobile ? 30 : 60, scale: 0.9, zIndex: 10, rotateY: -15, rotateX: 5, filter: "brightness(95%)" }
+                            : { x: isMobile ? 90 : 60, scale: 0.9, zIndex: 10, rotateY: -30, rotateX: 5, filter: "brightness(95%)" }
                         }
                         whileHover={activePhone === 0 ? { scale: 0.92, filter: "brightness(100%)" } : {}}
                         transition={{ duration: 0.6, type: "spring", bounce: 0.3 }}
