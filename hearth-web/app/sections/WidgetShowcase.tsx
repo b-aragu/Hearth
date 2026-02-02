@@ -106,7 +106,13 @@ export function WidgetShowcase() {
                                     whileHover={{ scale: 1.05 }}
                                     className="w-16 h-16 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 flex flex-col items-center justify-center shadow-lg cursor-pointer hover:bg-white/10 transition-colors overflow-hidden"
                                 >
-                                    <div className="scale-75 -mb-1"><Creature emoji="🐶" size="sm" animated={false} /></div>
+                                    <motion.div
+                                        animate={{ y: [0, -3, 0] }}
+                                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                                        className="scale-75 -mb-1"
+                                    >
+                                        <Creature emoji="🐶" size="sm" animated={false} />
+                                    </motion.div>
                                     <span className="text-[9px] font-bold text-white/80 leading-none mt-1">Lvl 5</span>
                                 </motion.div>
                                 <motion.div
