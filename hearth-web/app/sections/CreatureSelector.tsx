@@ -64,12 +64,17 @@ const creatures = [
     }
 ];
 
+import { QuizModal } from "@/app/components/ui/QuizModal";
+
 export function CreatureSelector() {
     const [selected, setSelected] = useState(creatures[0].id);
     const [hovered, setHovered] = useState<string | null>(null);
+    const [isQuizOpen, setIsQuizOpen] = useState(false);
 
     return (
         <section className="py-24 px-4 relative overflow-hidden bg-[#FFF9F0]" id="companions">
+            <QuizModal isOpen={isQuizOpen} onClose={() => setIsQuizOpen(false)} />
+
             {/* Background Elements */}
             <div className="absolute top-1/4 left-0 w-[600px] h-[600px] bg-lavender/15 rounded-full blur-[100px] -z-10" />
             <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-peach/15 rounded-full blur-[100px] -z-10" />
@@ -83,7 +88,7 @@ export function CreatureSelector() {
                         className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-charcoal/5 shadow-sm mb-4"
                     >
                         <Sparkles className="w-3.5 h-3.5 text-coral" />
-                        <span className="text-[11px] font-bold text-charcoal/60 uppercase tracking-wider font-dm-sans">Love at first sight</span>
+                        <span className="text-[11px] font-bold text-charcoal/60 uppercase tracking-wider font-dm-sans">Shared Growth</span>
                     </motion.div>
 
                     <motion.h2
@@ -93,7 +98,7 @@ export function CreatureSelector() {
                         transition={{ delay: 0.1 }}
                         className="text-4xl md:text-5xl font-outfit font-bold text-charcoal mb-6"
                     >
-                        Choose. Name. <span className="text-transparent bg-clip-text bg-gradient-to-r from-coral to-peach">Raise.</span>
+                        Grow <span className="text-transparent bg-clip-text bg-gradient-to-r from-coral to-peach">Together.</span>
                     </motion.h2>
 
                     <motion.p
@@ -103,7 +108,7 @@ export function CreatureSelector() {
                         transition={{ delay: 0.2 }}
                         className="text-lg text-charcoal/60 font-dm-sans max-w-2xl mx-auto leading-relaxed"
                     >
-                        Find the little one that melts your heart. You'll name them, care for them, and watch them grow together.
+                        Pick a companion that reflects your bond. As you nurture your relationship, it evolves with you.
                     </motion.p>
                 </div>
 
@@ -183,6 +188,22 @@ export function CreatureSelector() {
                                     </AnimatePresence>
                                 </div>
 
+                                {/* Persistent Evolution Display on Selection (Mobile Friendly) */}
+                                {isSelected && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: "auto" }}
+                                        className="flex items-center justify-center gap-4 mb-6"
+                                    >
+                                        {creature.evolution.map((evo, i) => (
+                                            <div key={i} className="flex flex-col items-center gap-1">
+                                                <span className="text-2xl">{evo}</span>
+                                                <div className="h-1 w-1 rounded-full bg-charcoal/10" />
+                                            </div>
+                                        ))}
+                                    </motion.div>
+                                )}
+
                                 {/* Content */}
                                 <div className="relative z-10 w-full max-w-[280px]">
                                     <h3 className="text-2xl font-outfit font-bold text-charcoal mb-3">{creature.name}</h3>
@@ -221,7 +242,12 @@ export function CreatureSelector() {
                 </div>
 
                 <div className="mt-20 text-center">
-                    <Button size="lg" variant="outline" className="border-charcoal/10 text-charcoal/50 hover:text-charcoal hover:border-charcoal/30 bg-white/50 backdrop-blur-md px-8 rounded-full">
+                    <Button
+                        size="lg"
+                        variant="outline"
+                        className="border-charcoal/10 text-charcoal/50 hover:text-charcoal hover:border-charcoal/30 bg-white/50 backdrop-blur-md px-8 rounded-full"
+                        onClick={() => setIsQuizOpen(true)}
+                    >
                         Not sure? Take the Quiz <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                 </div>
