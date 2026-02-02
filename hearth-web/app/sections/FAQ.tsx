@@ -7,27 +7,27 @@ import { cn } from "@/app/lib/utils";
 const faqs = [
     {
         question: "Does it work if one of us has Android?",
-        answer: "Absolutely! Hearth is fully cross-platform. You can be on iPhone while your partner is on Android. As long as you're synced via the app, your connection knows no boundaries."
+        answer: "Yes! The pet lives in the app, so it works on iPhone and Android."
     },
     {
         question: "Can we use it for long distance?",
-        answer: "It was built for exactly that. Whether you're 5 miles or 5,000 miles apart, Hearth gives you a way to feel their presence without needing a call or text. It's a quiet 'I'm thinking of you' right on your lock screen."
+        answer: "Perfect for that. Raising a pet together makes you feel close, even when far apart."
     },
     {
         question: "How do the widgets update?",
-        answer: "Magic (and some code). When you check in or complete a daily prompt, your partner's widget updates instantly. It's like sending a signal flare of love."
+        answer: "When you feed or care for the pet, it updates on your partner's phone too."
     },
     {
         question: "How does our companion grow?",
-        answer: "Just like your relationship! Consistency is key. As your streak grows, your companion evolves directly on your Lock Screen—unlocking new moods, outfits, and celebrations."
+        answer: "Consistency makes it grow. The more you care for it, the bigger and happier it gets."
     },
     {
         question: "Can we use different devices?",
-        answer: "Love shouldn't care about operating systems. We're thinking cross-platform from day one. As long as you're synced in the cloud, you're synced in heart."
+        answer: "Yes, love doesn't care about phones. Your pet is safe in the cloud."
     },
     {
         question: "Can we change our companion later?",
-        answer: "Of course! You can welcome a new companion anytime. Your previous ones will retire happily to your Memory Garden, where you can visit them and your past streaks."
+        answer: "Sure! You can adopt a new pet anytime. Old pets go to your Memory Garden."
     }
 ];
 

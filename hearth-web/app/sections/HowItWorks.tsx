@@ -7,22 +7,22 @@ import { Creature } from "@/app/components/ui/Creature";
 
 const steps = [
     {
-        title: "1. Choose Your Companion",
-        desc: "Pick a virtual friend that matches your couple style. They'll grow as you grow.",
+        title: "1. Choose Your Pet",
+        desc: "Pick a pet to adopt together. It needs both of you to thrive.",
         color: "bg-coral",
         gradient: "from-coral to-peach",
         visual: <Step1Visual />
     },
     {
-        title: "2. Daily Check-in",
-        desc: "Answer one meaningful question together every day. Spark convos, not just logistics.",
+        title: "2. Care Every Day",
+        desc: "Answer a question daily to feed your pet. It needs your attention to grow.",
         color: "bg-mint",
         gradient: "from-mint to-teal-300",
         visual: <Step2Visual />
     },
     {
         title: "3. Watch It Grow",
-        desc: "Consistency evolves your creature. Build your streak and see your love level up.",
+        desc: "Keep your streak to help your pet evolve. Don't let it get lonely!",
         color: "bg-lavender",
         gradient: "from-lavender to-purple-400",
         visual: <Step3Visual />

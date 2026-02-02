@@ -8,38 +8,38 @@ import { Creature } from "@/app/components/ui/Creature";
 const features = [
     {
         id: "streaks",
-        title: "Daily Streaks",
+        title: "Feed Your Pet",
         icon: <Flame className="w-5 h-5" />,
         color: "bg-coral",
         gradient: "from-coral to-orange-400",
-        description: "Build a habit of showing up. Seeing your streak grow becomes a shared point of pride only you two understand.",
+        description: "Your daily connection feeds your pet. Keep the streak alive to keep it happy.",
         visual: <StreaksVisual />
     },
     {
         id: "decisions",
-        title: "Daily Decisions",
+        title: "Daily Care",
         icon: <HeartHandshake className="w-5 h-5" />,
         color: "bg-mint",
         gradient: "from-mint to-teal-500",
-        description: "Meaningful questions that spark conversation. Discover new layers of your partner every single day.",
+        description: "Answer a question to care for your pet. Learn about your partner while you play.",
         visual: <DecisionsVisual />
     },
     {
         id: "timeline",
-        title: "Memory Timeline",
+        title: "Pet Memories",
         icon: <History className="w-5 h-5" />,
         color: "bg-lavender",
         gradient: "from-lavender to-purple-500",
-        description: "Look back on your journey. See how your companion grew alongside your relationship milestones.",
+        description: "Look back at your pet's growth. See how it changed as your bond grew.",
         visual: <TimelineVisual />
     },
     {
         id: "widgets",
-        title: "Love Widgets",
+        title: "Pet on Lock Screen",
         icon: <Smartphone className="w-5 h-5" />,
         color: "bg-blue-500",
         gradient: "from-blue-500 to-cyan-500",
-        description: "Keep your connection visible. See your companion and streak status right from your home screen.",
+        description: "Your pet lives on your home screen. Check on it (and your partner) anytime.",
         visual: <WidgetsVisual />
     }
 ];
@@ -206,8 +206,8 @@ function DecisionsVisual() {
     return (
         <div className="w-full h-full bg-[#E0F7FA] flex flex-col relative">
             <div className="p-6 pt-16 pb-6 bg-gradient-to-b from-white to-[#E0F7FA]/0">
-                <h4 className="text-center text-teal-700/80 font-bold text-xs uppercase tracking-wider mb-2">Daily Connection</h4>
-                <p className="text-center text-teal-900 font-outfit font-bold text-lg leading-tight">Watering your relationship garden 🌱</p>
+                <h4 className="text-center text-teal-700/80 font-bold text-xs uppercase tracking-wider mb-2">Daily Feeding</h4>
+                <p className="text-center text-teal-900 font-outfit font-bold text-lg leading-tight">Feeding your pet together 🦴</p>
             </div>
 
             <div className="flex-1 px-5 space-y-6 overflow-hidden relative">
@@ -237,7 +237,7 @@ function DecisionsVisual() {
 
                 <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 px-6 py-3 bg-white/90 backdrop-blur-md rounded-full shadow-xl border border-teal-100">
                     <Heart className="w-4 h-4 text-coral fill-coral animate-bounce" />
-                    <span className="text-xs font-bold text-charcoal tracking-wide">Bond Strenghtened!</span>
+                    <span className="text-xs font-bold text-charcoal tracking-wide">Pet Leveled Up!</span>
                 </div>
             </div>
         </div>
@@ -251,8 +251,8 @@ function TimelineVisual() {
 
             <div className="pt-20 px-5 space-y-8 pl-14">
                 {[
-                    { date: "Oct 12", title: "Met on Hearth", icon: "🌱", color: "bg-emerald-400", shadow: "shadow-emerald-200" },
-                    { date: "Nov 01", title: "1st Month Streak", icon: "🔥", color: "bg-orange-400", shadow: "shadow-orange-200" },
+                    { date: "Oct 12", title: "Adopted Pet", icon: "🌱", color: "bg-emerald-400", shadow: "shadow-emerald-200" },
+                    { date: "Nov 01", title: "Pet's 1st Month", icon: "🔥", color: "bg-orange-400", shadow: "shadow-orange-200" },
                     { date: "Dec 25", title: "First Christmas", icon: "🎄", color: "bg-red-500", shadow: "shadow-red-200" },
                     { date: "Feb 14", title: "Valentine's Date", icon: "💖", color: "bg-pink-500", shadow: "shadow-pink-200" },
                     { date: "Mar 20", title: "Spring Trip", icon: "✈️", color: "bg-blue-400", shadow: "shadow-blue-200" },

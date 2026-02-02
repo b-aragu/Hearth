@@ -143,15 +143,15 @@ export function WidgetShowcase() {
                                             <div className="w-6 h-6 rounded-full bg-gradient-to-br from-coral to-orange-500 flex items-center justify-center shadow-md animate-pulse">
                                                 <Creature emoji="🐶" size="sm" animated={false} className="scale-50" />
                                             </div>
-                                            <span className="text-[11px] font-bold tracking-wider text-white/70 uppercase">Hearth • Growing</span>
+                                            <span className="text-[11px] font-bold tracking-wider text-white/70 uppercase">Pet • Growing</span>
                                         </div>
                                         <span className="text-[10px] font-medium text-white/40">Now</span>
                                     </div>
 
                                     <div className="flex gap-4 items-center">
                                         <div className="flex-1">
-                                            <h4 className="font-outfit font-bold text-xl mb-0.5 tracking-tight">Daily Check-in</h4>
-                                            <p className="text-white/70 text-sm font-dm-sans">Sarah just answered!</p>
+                                            <h4 className="font-outfit font-bold text-xl mb-0.5 tracking-tight">Feeding Time</h4>
+                                            <p className="text-white/70 text-sm font-dm-sans">Sarah fed the pet!</p>
                                         </div>
                                         <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-xl relative shadow-inner">
                                             🐻
@@ -175,7 +175,7 @@ export function WidgetShowcase() {
                             className="bg-white/5 border border-white/5 p-8 rounded-[2.5rem] backdrop-blur-sm opacity-50 hover:opacity-100 transition-opacity duration-500 group"
                         >
                             <div className="text-xs font-bold text-white/30 uppercase tracking-widest mb-3 group-hover:text-white/50 transition-colors">The Old Way</div>
-                            <h3 className="text-xl font-bold mb-2 font-outfit">Just text.</h3>
+                            <h3 className="text-xl font-bold mb-2 font-outfit">Just Texting.</h3>
                             <p className="text-white/40 text-sm leading-relaxed mb-4 group-hover:text-white/60 transition-colors">"Did you remember to check in today?"</p>
                             <div className="h-1 w-12 bg-white/10 rounded-full group-hover:bg-white/20 transition-colors" />
                         </motion.div>
@@ -190,10 +190,10 @@ export function WidgetShowcase() {
                                 <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                                 <div className="absolute -top-3 -right-3 bg-gradient-to-r from-coral to-pink-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-full shadow-lg shadow-pink-500/30">RECOMMENDED</div>
 
-                                <div className="text-xs font-bold text-pink-300 uppercase tracking-widest mb-3">The Hearth Way</div>
-                                <h3 className="text-2xl font-bold mb-2 text-white font-outfit">Heart-melting.</h3>
+                                <div className="text-xs font-bold text-pink-300 uppercase tracking-widest mb-3">Raising Together</div>
+                                <h3 className="text-2xl font-bold mb-2 text-white font-outfit">Cute & Fun.</h3>
                                 <p className="text-white/70 text-sm font-dm-sans leading-relaxed mb-8">
-                                    A gentle nudge on your lock screen. A shared moment of joy when you both sync up.
+                                    See your pet wave hello. It connects you without words.
                                 </p>
 
                                 <div className="flex items-center gap-3">
