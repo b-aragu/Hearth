@@ -29,6 +29,17 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth">
       <body className={`${outfit.variable} ${dmSans.variable} font-sans bg-[#FFF9F0] text-charcoal antialiased overflow-x-hidden selection:bg-coral selection:text-white`}>
         {children}
+        {/* Google Tag Manager */}
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-40QMNHJYY9" strategy="afterInteractive" />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-40QMNHJYY9');
+          `}
+        </Script>
         <Script id="microsoft-clarity" strategy="afterInteractive">
           {`
             (function(c,l,a,r,i,t,y){
