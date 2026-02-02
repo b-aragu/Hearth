@@ -55,7 +55,7 @@ export function WidgetShowcase() {
                     </motion.div>
                     <h2 className="text-4xl lg:text-6xl font-outfit font-bold mb-6 bg-gradient-to-br from-white via-white to-white/40 bg-clip-text text-transparent">Always Connected</h2>
                     <p className="text-white/50 text-lg lg:text-2xl font-dm-sans max-w-2xl mx-auto font-light leading-relaxed">
-                        Keep your companion—and your partner—close. <br className="hidden md:block" /> No checking feeds, just checking in.
+                        See your pet and partner on your lock screen. Always stay connected.
                     </p>
                 </div>
 

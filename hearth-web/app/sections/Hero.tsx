@@ -86,8 +86,7 @@ export function Hero() {
                         transition={{ delay: 0.5 }}
                         className="text-lg lg:text-xl text-charcoal/70 font-dm-sans leading-relaxed mb-10 max-w-lg mx-auto lg:mx-0"
                     >
-                        <strong className="text-charcoal block mb-2 text-xl">The daily ritual that makes love visible.</strong>
-                        Raise a virtual companion together. Watch your relationship grow, one day at a time.
+                        Raise a virtual pet with your partner. Grow closer every day.
                     </motion.p>
 
                     {/* CTAs */}

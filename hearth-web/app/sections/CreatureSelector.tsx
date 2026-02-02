@@ -108,7 +108,7 @@ export function CreatureSelector() {
                         transition={{ delay: 0.2 }}
                         className="text-lg text-charcoal/60 font-dm-sans max-w-2xl mx-auto leading-relaxed"
                     >
-                        Pick a companion that reflects your bond. <span className="md:hidden">Swipe to explore them all.</span><span className="hidden md:inline">Choose wisely!</span> As you nurture your relationship, it evolves with you.
+                        Pick a pet to raise with your partner. It evolves as you grow closer.
                     </motion.p>
 
                     {/* Mobile Swipe Hint */}
