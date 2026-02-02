@@ -206,8 +206,8 @@ function DecisionsVisual() {
     return (
         <div className="w-full h-full bg-[#E0F7FA] flex flex-col relative">
             <div className="p-6 pt-16 pb-6 bg-gradient-to-b from-white to-[#E0F7FA]/0">
-                <h4 className="text-center text-teal-700 font-outfit font-bold text-xl mb-1">Today's Question</h4>
-                <p className="text-center text-teal-600/70 text-xs font-medium">Answered by both of you</p>
+                <h4 className="text-center text-teal-700 font-outfit font-bold text-xl mb-1">Daily Connection</h4>
+                <p className="text-center text-teal-600/70 text-xs font-medium">Watering your relationship garden 🌱</p>
             </div>
 
             <div className="flex-1 px-5 space-y-5 overflow-hidden relative">
@@ -237,7 +237,7 @@ function DecisionsVisual() {
 
                 <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 px-5 py-2.5 bg-white rounded-full shadow-xl border border-teal-100/50">
                     <Heart className="w-4 h-4 text-coral fill-coral animate-bounce" />
-                    <span className="text-xs font-bold text-charcoal">Vibe check passed</span>
+                    <span className="text-xs font-bold text-charcoal">Bond Strengthened!</span>
                 </div>
             </div>
         </div>
