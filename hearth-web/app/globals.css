@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+@theme {
+  --font-outfit: var(--font-outfit);
+  --font-dm-sans: var(--font-dm-sans);
+
+  --color-cream: #FFF9F0;
+  --color-coral: #FFB7B2;
+  --color-peach: #FFDAC1;
+  --color-mint: #B5EAD7;
+  --color-lavender: #C7CEEA;
+  --color-charcoal: #2D2D3A;
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-drift: drift 25s linear infinite;
+  --animate-breathe: breathe 4s ease-in-out infinite;
+  --animate-bounce-soft: bounce-soft 2s ease-in-out infinite;
+  --animate-gradient-shift: gradientShift 8s ease infinite;
+  --animate-shimmer: shimmer 2s linear infinite;
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  @keyframes drift {
+    0% {
+      transform: translateX(-100%);
+    }
+
+    100% {
+      transform: translateX(100vw);
+    }
+  }
+
+  @keyframes breathe {
+
+    0%,
+    100% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(1.05);
+    }
+  }
+
+  @keyframes bounce-soft {
+
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes gradientShift {
+
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+
+    100% {
+      transform: translateX(100%);
+    }
+  }
+}
+
+:root {
+  --foreground-rgb: 45, 45, 58;
+  --background-start-rgb: 255, 249, 240;
+  --background-end-rgb: 255, 255, 255;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-dm-sans), sans-serif;
+  color: var(--color-charcoal);
+  background: var(--color-cream);
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-outfit), sans-serif;
+}
