@@ -6,10 +6,33 @@ import { useCreature } from '../../context/CreatureContext';
 import { useAuth } from '../../context/AuthContext';
 import { LinearGradient } from 'expo-linear-gradient';
 import { CREATURES } from '../../constants/creatures';
-import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
+// ... imports
+import Animated, { FadeInDown, FadeInUp, useSharedValue, withRepeat, withTiming, Easing, useAnimatedStyle, withDelay } from 'react-native-reanimated';
 import { useState, useCallback, useEffect } from 'react';
+import { DynamicCreature } from '../../components/creatures/DynamicCreature';
 
 const { width } = Dimensions.get('window');
+
+// Floating Particle Component
+const FloatingParticle = ({ children, delay = 0, x, y }: { children: React.ReactNode, delay?: number, x: number, y: number }) => {
+    const translateY = useSharedValue(0);
+    const opacity = useSharedValue(0.6);
+
+    useEffect(() => {
+        translateY.value = withDelay(delay, withRepeat(withTiming(-20, { duration: 3000, easing: Easing.inOut(Easing.ease) }), -1, true));
+        opacity.value = withDelay(delay, withRepeat(withTiming(0.3, { duration: 3000, easing: Easing.inOut(Easing.ease) }), -1, true));
+    }, []);
+
+    const animatedStyle = useAnimatedStyle(() => ({
+        transform: [{ translateY: translateY.value }],
+        opacity: opacity.value,
+        position: 'absolute',
+        top: y,
+        left: x
+    }));
+
+    return <Animated.View style={animatedStyle}>{children}</Animated.View>;
+};
 
 // Components
 const StatBadge = ({ value, label, isStreak }: { value: string | number, label: string, isStreak?: boolean }) => (
@@ -58,6 +81,9 @@ export default function HomeScreen() {
     const partnerChoice = isP1 ? couple?.p2_choice : couple?.p1_choice;
     const hasPendingProposal = !!partnerChoice;
 
+    // Determine Mood
+    const mood = streak > 2 ? 'happy' : (streak > 0 ? 'neutral' : 'sleepy');
+
     return (
         <View className="flex-1 bg-cream relative overflow-hidden">
             <StatusBar style="dark" />
@@ -85,12 +111,28 @@ export default function HomeScreen() {
 
                 {/* Center Creature Area */}
                 <View className="flex-1 items-center justify-center relative">
-                    {/* Floating Particles (Static for now) */}
-                    <View className="absolute top-10 left-10 opacity-60"><Text className="text-2xl">✨</Text></View>
-                    <View className="absolute bottom-20 right-10 opacity-60"><Text className="text-2xl">🌸</Text></View>
+                    {/* Floating Particles (Animated) */}
+                    <FloatingParticle x={40} y={40} delay={0}><Text className="text-2xl">✨</Text></FloatingParticle>
+                    <FloatingParticle x={width - 80} y={150} delay={1000}><Text className="text-2xl">🌸</Text></FloatingParticle>
 
-                    <View className="mb-10">
-                        <Creature emoji={creatureData.emoji} size="xl" />
+                    <View className="mb-10 relative">
+                        {/* Replaced Static Emoji with SVG Engine */}
+                        <DynamicCreature
+                            creatureId={selectedCreature}
+                            mood={mood}
+                            scale={1.2}
+                            accessories={couple?.accessories}
+                            accessoryColors={couple?.accessory_colors}
+                            daysTogether={daysTogether}
+                        />
+
+                        {/* Edit Button */}
+                        <Pressable
+                            onPress={() => router.push('/studio')}
+                            className="absolute -bottom-4 right-0 bg-white/80 p-2 rounded-full border border-white shadow-sm"
+                        >
+                            <Text className="text-xs">🎨</Text>
+                        </Pressable>
                     </View>
                 </View>
 

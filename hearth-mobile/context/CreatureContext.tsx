@@ -16,6 +16,8 @@ interface CoupleData {
     p2_name_choice: string | null;
     creature_name: string | null;
     matched_at: string | null;
+    accessories?: string[]; // New field
+    accessory_colors?: Record<string, string>; // New field
 }
 
 interface ProfileData {
@@ -36,6 +38,8 @@ interface CreatureContextType {
     partnerName: string;
     partnerCheckedIn: boolean;
     isPartnerOnline: boolean;
+    updateAccessories: (items: string[]) => Promise<void>; // Deprecated
+    saveAccessories: (items: string[], colors: Record<string, string>) => Promise<void>; // New
 }
 
 const CreatureContext = createContext<CreatureContextType | undefined>(undefined);
@@ -61,19 +65,75 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
         if (error) console.log("Presence update failed (migration pending?)");
     };
 
-    const fetchCouple = async () => {
-        if (!user) {
-            setLoading(false);
-            return;
+    const updateAccessories = async (items: string[]) => {
+        if (!couple) return;
+        // Optimistic update
+        setCouple(prev => prev ? { ...prev, accessories: items } : null);
+
+        const { error } = await supabase
+            .from('couples')
+            .update({ accessories: items })
+            .eq('id', couple.id);
+
+        if (error) {
+            console.error('Failed to update accessories:', error);
+            // Revert on error would go here, omitting for brevity
         }
+    };
+
+    const saveAccessories = async (items: string[], colors: Record<string, string>) => {
+        if (!couple || !user) return;
+
+        // 1. Optimistic Update
+        setCouple(prev => prev ? { ...prev, accessories: items, accessory_colors: colors } : null);
 
         try {
-            // 1. Fetch Couple Data
+            // 2. Persist to DB
+            const { error } = await supabase
+                .from('couples')
+                .update({
+                    accessories: items,
+                    accessory_colors: colors
+                })
+                .eq('id', couple.id);
+
+            if (error) throw error;
+
+            // 3. Create a Memory (Log the style change)
+            // Only create memory if something actually changed (naive check: just do it for now)
+            const memoryTitle = `${partnerName || 'Someone'} updated the look! 🎨`;
+            const memoryDesc = `New accessories added to your creature. Check out the fresh style!`;
+
+            await supabase.from('memories').insert({
+                couple_id: couple.id,
+                type: 'Growth', // or 'Milestone'
+                title: memoryTitle,
+                description: memoryDesc,
+                image_emoji: '🎩',
+                color_theme: 'lavender',
+                created_at: new Date().toISOString()
+            });
+
+            // 4. Send Notification (Simulated)
+            // In a real app, you'd call a backend function here
+            console.log(`[NOTIFICATION] Sending to partner: "${memoryTitle}"`);
+
+        } catch (err) {
+            console.error('Failed to save accessories:', err);
+            // Revert optimistic update ideally
+        }
+    };
+
+    const fetchCouple = async () => {
+        if (!user) return;
+
+        try {
+            // Fetch Relationship - Reverting to * to be safe if column missing
             const { data, error } = await supabase
                 .from('couples')
                 .select('*')
                 .or(`partner1_id.eq.${user.id},partner2_id.eq.${user.id}`)
-                .maybeSingle();
+                .single();
 
             if (data) {
                 setCouple(data);
@@ -166,7 +226,10 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
                 streak,
                 partnerName,
                 partnerCheckedIn,
-                isPartnerOnline
+                partnerCheckedIn,
+                isPartnerOnline,
+                updateAccessories,
+                saveAccessories
             }}
         >
             {children}

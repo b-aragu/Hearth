@@ -171,6 +171,14 @@ export default function SettingsScreen() {
                     isLink
                 />
 
+                <SettingItem
+                    icon="🧪"
+                    label="Developer Lab"
+                    value="Growth Simulator"
+                    onPress={() => router.push('/dev/gallery')}
+                    isLink
+                />
+
                 <Pressable
                     onPress={() => signOut()}
                     className="mt-8 mb-12 p-4 bg-red-50 rounded-2xl items-center border border-red-100 active:bg-red-100"
