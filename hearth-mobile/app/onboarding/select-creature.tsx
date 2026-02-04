@@ -9,6 +9,7 @@ import { useCreature } from '../../context/CreatureContext';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { Feather, Ionicons } from '@expo/vector-icons';
+import { DynamicCreature } from '../../components/creatures/DynamicCreature';
 
 const { width } = Dimensions.get('window');
 
@@ -185,7 +186,14 @@ export default function CreatureSelectionScreen() {
             </Pressable>
 
             <View className="bg-white/60 p-10 rounded-[40px] items-center shadow-lg w-full mb-8">
-                <Text className="text-[130px] mb-6">{activeCreature.emoji}</Text>
+                <View className="w-60 h-60 items-center justify-center mb-6">
+                    <DynamicCreature
+                        creatureId={couple.creature_type || activeCreature.id}
+                        mood="happy"
+                        scale={1.2}
+                        daysTogether={5} // Slightly grown for established view
+                    />
+                </View>
 
                 <View className="flex-row items-center justify-center gap-3 mb-2">
                     <Text className="font-outfit font-bold text-4xl text-charcoal">{couple?.creature_name || activeCreature.name}</Text>
@@ -212,7 +220,14 @@ export default function CreatureSelectionScreen() {
 
                 {/* Main Card */}
                 <Animated.View key={selectedId} entering={FadeInUp.springify()} className="bg-white/60 border border-white/80 rounded-[40px] p-6 items-center shadow-sm mb-6">
-                    <Text className="text-[100px] mb-4">{activeCreature.emoji}</Text>
+                    <View className="w-52 h-52 items-center justify-center mb-4">
+                        <DynamicCreature
+                            creatureId={activeCreature.id}
+                            mood="happy"
+                            scale={1.1} // Adjusted scale to counteract the baby growth factor slightly
+                            daysTogether={0} // Show as BABY
+                        />
+                    </View>
                     <Text className="font-outfit font-bold text-2xl text-charcoal mb-1">{activeCreature.name}</Text>
 
                     {/* Show Scroller ONLY if NOT established/locked */}

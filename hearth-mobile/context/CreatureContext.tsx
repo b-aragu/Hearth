@@ -38,6 +38,7 @@ interface CreatureContextType {
     partnerName: string;
     partnerCheckedIn: boolean;
     isPartnerOnline: boolean;
+    userName: string;
     updateAccessories: (items: string[]) => Promise<void>; // Deprecated
     saveAccessories: (items: string[], colors: Record<string, string>) => Promise<void>; // New
 }
@@ -56,6 +57,7 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
     const [partnerName, setPartnerName] = useState('Partner');
     const [partnerCheckedIn, setPartnerCheckedIn] = useState(false);
     const [isPartnerOnline, setIsPartnerOnline] = useState(false);
+    const [userName, setUserName] = useState('Someone');
 
     // Update Presence Helper
     const updatePresence = async () => {
@@ -97,14 +99,17 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
                 })
                 .eq('id', couple.id);
 
-            if (error) throw error;
+            if (error) {
+                console.error("Supabase Save Error:", error);
+                throw error;
+            }
 
             // 3. Create a Memory (Log the style change)
             // Only create memory if something actually changed (naive check: just do it for now)
-            const memoryTitle = `${partnerName || 'Someone'} updated the look! 🎨`;
+            const memoryTitle = `${userName || 'Someone'} updated the look! 🎨`;
             const memoryDesc = `New accessories added to your creature. Check out the fresh style!`;
 
-            await supabase.from('memories').insert({
+            const { error: memError } = await supabase.from('memories').insert({
                 couple_id: couple.id,
                 type: 'Growth', // or 'Milestone'
                 title: memoryTitle,
@@ -114,13 +119,17 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
                 created_at: new Date().toISOString()
             });
 
+            if (memError) console.error("Memory Log Error:", memError);
+
             // 4. Send Notification (Simulated)
             // In a real app, you'd call a backend function here
             console.log(`[NOTIFICATION] Sending to partner: "${memoryTitle}"`);
 
         } catch (err) {
-            console.error('Failed to save accessories:', err);
-            // Revert optimistic update ideally
+            console.error('Failed to save accessories in Context:', err);
+            // Revert optimistic update
+            setCouple(prev => prev); // This triggers a refresh if needed, but ideally we'd have a deep revert
+            throw err; // Propagate to UI
         }
     };
 
@@ -139,7 +148,11 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
                 setCouple(data);
                 setSelectedCreature(data.creature_type as CreatureType);
 
-                // 2. Calculate Days Together
+                // 2. Fetch User Profile
+                const { data: uData } = await supabase.from('profiles').select('display_name').eq('id', user.id).single();
+                if (uData?.display_name) setUserName(uData.display_name);
+
+                // 3. Calculate Days Together
                 if (data.matched_at) {
                     const start = new Date(data.matched_at);
                     const now = new Date();
@@ -212,7 +225,35 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         fetchCouple();
-    }, [user]);
+
+        // REAL-TIME SYNC
+        if (!user) return;
+
+        // Subscribe to changes in the couples table for our specific ID
+        const subscription = supabase
+            .channel('couple_changes')
+            .on(
+                'postgres_changes',
+                {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'couples'
+                },
+                (payload) => {
+                    // Only update if it's OUR couple and something relevant changed
+                    if (payload.new.id === couple?.id || (payload.new.partner1_id === user.id || payload.new.partner2_id === user.id)) {
+                        console.log('Real-time update received:', payload.new);
+                        // Update local couple state immediately
+                        setCouple(payload.new as CoupleData);
+                    }
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(subscription);
+        };
+    }, [user, couple?.id]);
 
     return (
         <CreatureContext.Provider
@@ -226,8 +267,8 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
                 streak,
                 partnerName,
                 partnerCheckedIn,
-                partnerCheckedIn,
                 isPartnerOnline,
+                userName,
                 updateAccessories,
                 saveAccessories
             }}

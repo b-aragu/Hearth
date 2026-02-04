@@ -151,13 +151,13 @@ export default function CreatureGallery() {
                     <View>
                         <Text className="font-bold text-charcoal mb-3">Species</Text>
                         <View className="flex-row flex-wrap gap-2">
-                            {['bear', 'bunny (WIP)'].map((c) => (
+                            {['bear', 'bunny', 'cat', 'dog', 'penguin'].map((c) => (
                                 <Pressable
                                     key={c}
-                                    onPress={() => setSelectedCreature(c.split(' ')[0])}
-                                    className={`px-4 py-2 rounded-full border ${selectedCreature === c.split(' ')[0] ? 'bg-blue-500 border-blue-500' : 'bg-white border-charcoal/10'}`}
+                                    onPress={() => setSelectedCreature(c)}
+                                    className={`px-4 py-2 rounded-full border ${selectedCreature === c ? 'bg-blue-500 border-blue-500' : 'bg-white border-charcoal/10'}`}
                                 >
-                                    <Text className={`font-bold ${selectedCreature === c.split(' ')[0] ? 'text-white' : 'text-charcoal'}`}>
+                                    <Text className={`font-bold ${selectedCreature === c ? 'text-white' : 'text-charcoal'} capitalize`}>
                                         {c}
                                     </Text>
                                 </Pressable>

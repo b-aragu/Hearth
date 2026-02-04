@@ -1,6 +1,8 @@
 import React from 'react';
 import Svg, { Circle, Path, G, Rect, Line } from 'react-native-svg';
-import Animated, { useAnimatedProps, SharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedProps, useAnimatedStyle, SharedValue } from 'react-native-reanimated';
+
+import { Platform } from 'react-native';
 
 // Animated components
 const AnimatedG = Animated.createAnimatedComponent(G);
@@ -20,6 +22,8 @@ interface BearProps {
 
 // Linear Interpolation Helper
 const lerp = (start: number, end: number, t: number) => start + (end - start) * t;
+
+const isWeb = Platform.OS === 'web';
 
 export const BearModel = ({ mood, breathing, blink, color = '#E6CBA8', accessories = [], growthFactor = 0, accessoryColors = {} }: BearProps) => {
 
@@ -60,18 +64,26 @@ export const BearModel = ({ mood, breathing, blink, color = '#E6CBA8', accessori
 
     // Whole Creature Animation (Breathing/Bouncing)
     // We animate the whole group to keep parts attached
-    const creatureAnimatedProps = useAnimatedProps(() => {
+    const creatureProps = useAnimatedProps(() => {
+        const transY = breathing.value * -5;
+        if (isWeb) {
+            return { transform: `translate(0, ${transY})` };
+        }
         return {
             transform: [
-                { translateY: breathing.value * -5 } // Simple bounce up/down
+                { translateY: transY } // Simple bounce up/down
             ]
         };
     });
 
-    const blinkAnimatedProps = useAnimatedProps(() => {
+    const blinkProps = useAnimatedProps(() => {
+        const scaleY = 1 - blink.value;
+        if (isWeb) {
+            return { transform: `scale(1, ${scaleY})` };
+        }
         return {
             transform: [
-                { scaleY: 1 - blink.value }
+                { scaleY: scaleY }
             ]
         };
     });
@@ -81,7 +93,7 @@ export const BearModel = ({ mood, breathing, blink, color = '#E6CBA8', accessori
             {/* SHADOW - Centered and scaled */}
             <Circle cx="100" cy="175" r={40 * bodyScale} fill="rgba(69, 58, 43, 0.1)" transform={`translate(100, 175) scale(${1 + (1 - growthFactor) * 0.2}) translate(-100, -175)`} />
 
-            <AnimatedG animatedProps={creatureAnimatedProps}>
+            <AnimatedG animatedProps={creatureProps}>
 
                 {/* BODY GROUP -> Scaled by Age */}
                 <G transform={`translate(0, -15) translate(100, 160) scale(${bodyScale}) translate(-100, -160)`}>
@@ -141,7 +153,7 @@ export const BearModel = ({ mood, breathing, blink, color = '#E6CBA8', accessori
                     {/* EYES - Dynamic Position & Size */}
                     <G transform={`translate(0, ${95 + eyeYOffset}) translate(100, ${95 + eyeYOffset}) scale(${eyeScale}) translate(-100, -${95 + eyeYOffset})`}>
                         {/* Container for Eyes */}
-                        <AnimatedG animatedProps={blinkAnimatedProps}>
+                        <AnimatedG animatedProps={blinkProps}>
                             <G transform={`translate(0, -${95 + eyeYOffset})`}>
                                 {mood === 'happy' ? (
                                     <>

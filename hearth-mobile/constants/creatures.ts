@@ -70,6 +70,18 @@ export const CREATURES = {
         ],
         stats: { cuddle: 88, energy: 50 },
         gradient: { colors: ['#B5EAD7', '#C7CEEA'] } // mint -> lavender
+    },
+    dog: {
+        id: 'dog',
+        emoji: '🐶',
+        name: 'Puppy',
+        desc: 'Loyal and full of joy. Always happy to see you and ready to play.',
+        traits: [
+            { icon: '🎾', name: 'Playful' },
+            { icon: '🦴', name: 'Loyal' }
+        ],
+        stats: { cuddle: 90, energy: 95 },
+        gradient: { colors: ['#FFDAC1', '#FFFFB5'] } // peach -> yellow (warm)
     }
 };
 

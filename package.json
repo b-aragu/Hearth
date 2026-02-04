@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "@remotion/cli": "^4.0.417",
+    "@remotion/player": "^4.0.417",
+    "@types/react": "^19.2.10",
+    "@types/react-dom": "^19.2.3",
+    "lucide-react": "^0.563.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "remotion": "^4.0.417",
+    "typescript": "^5.9.3"
+  }
+}

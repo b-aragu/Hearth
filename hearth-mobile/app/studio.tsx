@@ -65,11 +65,30 @@ export default function StudioScreen() {
 
     const handleSave = async () => {
         setIsSaving(true);
-        if (saveAccessories) {
-            await saveAccessories(currentAccessories, accessoryColors);
+        try {
+            if (saveAccessories) {
+                await saveAccessories(currentAccessories, accessoryColors);
+            }
+            setIsSaving(false);
+
+            // Safer navigation: fallback to home if we can't go back
+            if (router.canGoBack()) {
+                router.back();
+            } else {
+                router.replace('/(tabs)');
+            }
+        } catch (err) {
+            console.error('Failed to save look in Studio:', err);
+            setIsSaving(false);
         }
-        setIsSaving(false);
-        router.back();
+    };
+
+    const handleBack = () => {
+        if (router.canGoBack()) {
+            router.back();
+        } else {
+            router.replace('/(tabs)');
+        }
     };
 
     return (
@@ -78,7 +97,7 @@ export default function StudioScreen() {
 
             {/* Header / Nav */}
             <View className="absolute top-12 left-6 z-10">
-                <Pressable onPress={() => router.back()} className="bg-white/50 p-3 rounded-full">
+                <Pressable onPress={handleBack} className="bg-white/50 p-3 rounded-full">
                     <Text>←</Text>
                 </Pressable>
             </View>

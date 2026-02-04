@@ -2,6 +2,10 @@ import React, { useEffect } from 'react';
 import { View } from 'react-native';
 import Animated, { useSharedValue, withRepeat, withTiming, withSequence, Easing, useDerivedValue, runOnJS } from 'react-native-reanimated';
 import { BearModel } from './models/BearModel';
+import { BunnyModel } from './models/BunnyModel';
+import { CatModel } from './models/CatModel';
+import { DogModel } from './models/DogModel';
+import { PenguinModel } from './models/PenguinModel';
 
 interface DynamicCreatureProps {
     creatureId: string;
@@ -61,7 +65,11 @@ export const DynamicCreature = ({
     const renderModel = () => {
         switch (creatureId) {
             case 'bear': return <BearModel mood={mood} breathing={breathing} blink={blink} accessories={accessories} growthFactor={growthFactor} accessoryColors={accessoryColors} />;
-            // case 'bunny': return <BunnyModel ... />;
+            case 'bunny': return <BunnyModel mood={mood} breathing={breathing} blink={blink} accessories={accessories} growthFactor={growthFactor} accessoryColors={accessoryColors} />;
+            case 'cat': return <CatModel mood={mood} breathing={breathing} blink={blink} accessories={accessories} growthFactor={growthFactor} accessoryColors={accessoryColors} />;
+            case 'dog': return <DogModel mood={mood} breathing={breathing} blink={blink} accessories={accessories} growthFactor={growthFactor} accessoryColors={accessoryColors} />;
+            case 'penguin': return <PenguinModel mood={mood} breathing={breathing} blink={blink} accessories={accessories} growthFactor={growthFactor} accessoryColors={accessoryColors} />;
+            case 'fox': return <CatModel mood={mood} breathing={breathing} blink={blink} accessories={accessories} growthFactor={growthFactor} accessoryColors={accessoryColors} color="#D97C50" />; // Re-use Cat for Fox temporarily
             default: return <BearModel mood={mood} breathing={breathing} blink={blink} accessories={accessories} growthFactor={growthFactor} accessoryColors={accessoryColors} />;
         }
     };

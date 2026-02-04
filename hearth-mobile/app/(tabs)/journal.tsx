@@ -2,7 +2,7 @@ import { View, Text, ScrollView, RefreshControl } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { useCallback, useState } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { useFocusEffect } from 'expo-router';
 import { supabase } from '../../lib/supabase';
 import { useCreature } from '../../context/CreatureContext';
@@ -87,6 +87,32 @@ export default function JournalScreen() {
             fetchMemories();
         }, [couple?.id])
     );
+
+    useEffect(() => {
+        if (!couple?.id) return;
+
+        // REAL-TIME SYNC FOR MEMORIES
+        const subscription = supabase
+            .channel(`memories_${couple.id}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'memories',
+                    filter: `couple_id=eq.${couple.id}`
+                },
+                (payload) => {
+                    console.log('New memory received:', payload.new);
+                    setMemories(prev => [payload.new as Memory, ...prev]);
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(subscription);
+        };
+    }, [couple?.id]);
 
     return (
         <View className="flex-1 bg-cream">
