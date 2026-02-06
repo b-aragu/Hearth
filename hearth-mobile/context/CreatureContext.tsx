@@ -370,9 +370,10 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
                 partnerName,
                 partnerStatus: isPartnerOnline ? 'Online' : 'Offline',
                 lastSeen: partnerLastSeen ? formatDistanceToNow(new Date(partnerLastSeen), { addSuffix: true }) : undefined,
+                mood: creatureMood || undefined,
             });
         }
-    }, [couple, streak, partnerName, isPartnerOnline, partnerLastSeen]);
+    }, [couple, streak, partnerName, isPartnerOnline, partnerLastSeen, creatureMood]);
 
     // PARTNER ACTIVITY NOTIFICATIONS
     useEffect(() => {

@@ -22,10 +22,10 @@ export function DayStreakWidget({
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                padding: 16,
+                padding: 12,
             }}
         >
-            {/* Decorative Ring 1 - Subtle outer glow effect via nested view */}
+            {/* Inner Ticket Card */}
             <FlexWidget
                 style={{
                     height: 'match_parent',
@@ -33,79 +33,89 @@ export function DayStreakWidget({
                     backgroundColor: '#FFFFFF',
                     borderRadius: 20,
                     flexDirection: 'column',
-                    justifyContent: 'space-between',
+                    justifyContent: 'flex-start',
                     alignItems: 'center',
-                    paddingVertical: 16,
-                    paddingHorizontal: 12,
+                    padding: 0,
+                    overflow: 'hidden',
                 }}
             >
-                {/* Header */}
-                <FlexWidget style={{ flexDirection: 'row', alignItems: 'center' }}>
+                {/* 1. Ticket Header (Colored Strip) */}
+                <FlexWidget
+                    style={{
+                        width: 'match_parent',
+                        height: 38,
+                        backgroundColor: '#FFEBEE', // Soft Pink Header
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}
+                >
                     <TextWidget
                         text="✨ TOGETHER"
                         style={{
-                            fontSize: 11,
+                            fontSize: 10,
                             color: '#9C4A5A',
-                            letterSpacing: 1,
+                            letterSpacing: 2,
                             fontWeight: 'bold',
                         }}
                     />
                 </FlexWidget>
 
-                {/* Main Counter */}
+                {/* 2. Main Content (White Body) */}
                 <FlexWidget
                     style={{
                         flexDirection: 'column',
                         alignItems: 'center',
-                        marginVertical: 4
+                        justifyContent: 'center',
+                        flex: 1, // Fill remaining space
+                        paddingBottom: 8
                     }}
                 >
-                    <TextWidget
-                        text={streak}
+                    <FlexWidget
                         style={{
-                            fontSize: 54,
-                            fontWeight: 'bold',
-                            color: '#D4847C', // Muted Coral
-                            fontFamily: 'sans-serif-medium'
+                            flexDirection: 'column',
+                            alignItems: 'center',
                         }}
-                    />
-                    <TextWidget
-                        text="DAYS"
-                        style={{
-                            fontSize: 12,
-                            color: '#D4847C',
-                            fontWeight: 'bold',
-                            marginTop: -8,
-                        }}
-                    />
-                </FlexWidget>
+                    >
+                        <TextWidget
+                            text={streak}
+                            style={{
+                                fontSize: 62,
+                                fontWeight: 'bold',
+                                color: '#D4847C', // Muted Coral
+                                fontFamily: 'sans-serif-medium'
+                            }}
+                        />
+                        <TextWidget
+                            text="DAYS"
+                            style={{
+                                fontSize: 13,
+                                color: '#D4847C',
+                                fontWeight: 'bold',
+                                marginTop: -10,
+                            }}
+                        />
+                    </FlexWidget>
 
-                {/* Footer Creature */}
-                <FlexWidget
-                    style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        backgroundColor: '#FFF0F5',
-                        borderRadius: 12,
-                        paddingHorizontal: 12,
-                        paddingVertical: 6,
-                    }}
-                >
-                    <TextWidget
-                        text={creature}
+                    {/* Footer Creature (Mood) */}
+                    <FlexWidget
                         style={{
-                            fontSize: 14,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            marginTop: 12,
+                            backgroundColor: '#FDF2F4',
+                            borderRadius: 10,
+                            paddingHorizontal: 10,
+                            paddingVertical: 5,
                         }}
-                    />
-                    <TextWidget
-                        text=" IN LOVE"
-                        style={{
-                            fontSize: 10,
-                            color: '#9C4A5A',
-                            fontWeight: 'bold',
-                            marginLeft: 4
-                        }}
-                    />
+                    >
+                        <TextWidget
+                            text={creature}
+                            style={{
+                                fontSize: 16,
+                            }}
+                        />
+                    </FlexWidget>
                 </FlexWidget>
             </FlexWidget>
         </FlexWidget>

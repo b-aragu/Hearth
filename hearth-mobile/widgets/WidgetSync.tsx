@@ -20,6 +20,7 @@ interface SyncWidgetDataProps {
     partnerName: string;
     partnerStatus: 'Online' | 'Offline' | 'Sleeping' | 'Away';
     lastSeen?: string;
+    mood?: string;
 }
 
 const getCreatureEmoji = (type: string) => {
@@ -36,6 +37,18 @@ const getCreatureEmoji = (type: string) => {
     }
 };
 
+const getMoodEmoji = (mood?: string) => {
+    switch (mood) {
+        case 'happy': return '😊';
+        case 'loved': return '😍';
+        case 'excited': return '🤩';
+        case 'sad': return '😢';
+        case 'sleepy': return '😴';
+        case 'neutral': return '';
+        default: return '';
+    }
+};
+
 /**
  * Sync widget data to Android home screen widgets
  * Call this whenever relevant data changes (streak, partner status, etc.)
@@ -47,6 +60,7 @@ export async function syncWidgetData({
     partnerName,
     partnerStatus,
     lastSeen,
+    mood,
 }: SyncWidgetDataProps) {
     if (Platform.OS !== 'android') return;
 
@@ -57,7 +71,7 @@ export async function syncWidgetData({
             renderWidget: () => (
                 <DayStreakWidget
                     streak={streak.toString()}
-                    creature={getCreatureEmoji(creatureType)}
+                    creature={`${getCreatureEmoji(creatureType)} ${getMoodEmoji(mood)}`}
                     creatureName={creatureName}
                 />
             ),
