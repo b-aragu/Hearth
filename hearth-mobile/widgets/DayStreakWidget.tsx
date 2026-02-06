@@ -17,68 +17,96 @@ export function DayStreakWidget({
             style={{
                 height: 'match_parent',
                 width: 'match_parent',
-                backgroundColor: '#FFF8F0', // Cream background
-                borderRadius: 22,
+                backgroundColor: '#FFF0F5', // Lavender Blush
+                borderRadius: 24,
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                padding: 12,
+                padding: 16,
             }}
         >
-            {/* Inner Card Effect */}
+            {/* Decorative Ring 1 - Subtle outer glow effect via nested view */}
             <FlexWidget
                 style={{
-                    width: 'match_parent',
                     height: 'match_parent',
+                    width: 'match_parent',
                     backgroundColor: '#FFFFFF',
-                    borderRadius: 18,
+                    borderRadius: 20,
                     flexDirection: 'column',
-                    justifyContent: 'center',
+                    justifyContent: 'space-between',
                     alignItems: 'center',
-                    padding: 4,
+                    paddingVertical: 16,
+                    paddingHorizontal: 12,
                 }}
             >
-                {/* Creature Circle */}
+                {/* Header */}
+                <FlexWidget style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <TextWidget
+                        text="✨ TOGETHER"
+                        style={{
+                            fontSize: 11,
+                            color: '#9C4A5A',
+                            letterSpacing: 1,
+                            fontWeight: 'bold',
+                        }}
+                    />
+                </FlexWidget>
+
+                {/* Main Counter */}
                 <FlexWidget
                     style={{
-                        width: 54,
-                        height: 54,
-                        borderRadius: 27,
-                        backgroundColor: '#FFEBEE', // Soft pink
-                        justifyContent: 'center',
+                        flexDirection: 'column',
                         alignItems: 'center',
-                        marginBottom: 4,
+                        marginVertical: 4
+                    }}
+                >
+                    <TextWidget
+                        text={streak}
+                        style={{
+                            fontSize: 54,
+                            fontWeight: 'bold',
+                            color: '#D4847C', // Muted Coral
+                            fontFamily: 'sans-serif-medium'
+                        }}
+                    />
+                    <TextWidget
+                        text="DAYS"
+                        style={{
+                            fontSize: 12,
+                            color: '#D4847C',
+                            fontWeight: 'bold',
+                            marginTop: -8,
+                        }}
+                    />
+                </FlexWidget>
+
+                {/* Footer Creature */}
+                <FlexWidget
+                    style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        backgroundColor: '#FFF0F5',
+                        borderRadius: 12,
+                        paddingHorizontal: 12,
+                        paddingVertical: 6,
                     }}
                 >
                     <TextWidget
                         text={creature}
                         style={{
-                            fontSize: 32,
+                            fontSize: 14,
+                        }}
+                    />
+                    <TextWidget
+                        text=" IN LOVE"
+                        style={{
+                            fontSize: 10,
+                            color: '#9C4A5A',
+                            fontWeight: 'bold',
+                            marginLeft: 4
                         }}
                     />
                 </FlexWidget>
-
-                {/* Streak Count */}
-                <TextWidget
-                    text={streak}
-                    style={{
-                        fontSize: 48,
-                        fontWeight: 'bold',
-                        color: '#D84315', // Deep Coral
-                    }}
-                />
-
-                {/* Days Together Label */}
-                <TextWidget
-                    text="DAYS OF LOVE"
-                    style={{
-                        fontSize: 9,
-                        color: '#A1887F',
-                        letterSpacing: 1.5,
-                        fontWeight: 'bold',
-                        marginTop: -4,
-                    }}
-                />
             </FlexWidget>
         </FlexWidget>
     );

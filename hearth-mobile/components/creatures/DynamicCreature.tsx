@@ -9,7 +9,7 @@ import { PenguinModel } from './models/PenguinModel';
 
 interface DynamicCreatureProps {
     creatureId: string;
-    mood?: 'happy' | 'sad' | 'sleepy' | 'neutral';
+    mood?: 'happy' | 'sad' | 'sleepy' | 'neutral' | string;
     scale?: number;
     accessories?: string[];
     daysTogether?: number; // New prop for growth
@@ -63,14 +63,17 @@ export const DynamicCreature = ({
 
     // Select the correct model
     const renderModel = () => {
+        // Map extended moods to supported model moods
+        const visualMood = (mood === 'loved' || mood === 'excited') ? 'happy' : mood as any;
+
         switch (creatureId) {
-            case 'bear': return <BearModel mood={mood} breathing={breathing} blink={blink} accessories={accessories} growthFactor={growthFactor} accessoryColors={accessoryColors} />;
-            case 'bunny': return <BunnyModel mood={mood} breathing={breathing} blink={blink} accessories={accessories} growthFactor={growthFactor} accessoryColors={accessoryColors} />;
-            case 'cat': return <CatModel mood={mood} breathing={breathing} blink={blink} accessories={accessories} growthFactor={growthFactor} accessoryColors={accessoryColors} />;
-            case 'dog': return <DogModel mood={mood} breathing={breathing} blink={blink} accessories={accessories} growthFactor={growthFactor} accessoryColors={accessoryColors} />;
-            case 'penguin': return <PenguinModel mood={mood} breathing={breathing} blink={blink} accessories={accessories} growthFactor={growthFactor} accessoryColors={accessoryColors} />;
-            case 'fox': return <CatModel mood={mood} breathing={breathing} blink={blink} accessories={accessories} growthFactor={growthFactor} accessoryColors={accessoryColors} color="#D97C50" />; // Re-use Cat for Fox temporarily
-            default: return <BearModel mood={mood} breathing={breathing} blink={blink} accessories={accessories} growthFactor={growthFactor} accessoryColors={accessoryColors} />;
+            case 'bear': return <BearModel mood={visualMood} breathing={breathing} blink={blink} accessories={accessories} growthFactor={growthFactor} accessoryColors={accessoryColors} />;
+            case 'bunny': return <BunnyModel mood={visualMood} breathing={breathing} blink={blink} accessories={accessories} growthFactor={growthFactor} accessoryColors={accessoryColors} />;
+            case 'cat': return <CatModel mood={visualMood} breathing={breathing} blink={blink} accessories={accessories} growthFactor={growthFactor} accessoryColors={accessoryColors} />;
+            case 'dog': return <DogModel mood={visualMood} breathing={breathing} blink={blink} accessories={accessories} growthFactor={growthFactor} accessoryColors={accessoryColors} />;
+            case 'penguin': return <PenguinModel mood={visualMood} breathing={breathing} blink={blink} accessories={accessories} growthFactor={growthFactor} accessoryColors={accessoryColors} />;
+            case 'fox': return <CatModel mood={visualMood} breathing={breathing} blink={blink} accessories={accessories} growthFactor={growthFactor} accessoryColors={accessoryColors} color="#D97C50" />; // Re-use Cat for Fox temporarily
+            default: return <BearModel mood={visualMood} breathing={breathing} blink={blink} accessories={accessories} growthFactor={growthFactor} accessoryColors={accessoryColors} />;
         }
     };
 

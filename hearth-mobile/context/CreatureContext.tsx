@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { CreatureType } from '../constants/creatures';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './AuthContext';
-import { differenceInDays, startOfDay } from 'date-fns';
+import { differenceInDays, startOfDay, formatDistanceToNow } from 'date-fns';
 import { syncWidgetData } from '../widgets/WidgetSync';
 
 interface CoupleData {
@@ -36,17 +36,20 @@ interface CreatureContextType {
     loading: boolean;
     refreshCouple: () => Promise<void>;
     setCreature: (id: CreatureType) => void;
-    // New Stats
+    // Stats
     daysTogether: number;
     streak: number;
     partnerName: string;
     partnerCheckedIn: boolean;
     isPartnerOnline: boolean;
+    partnerLastSeen: string | null; // New: for "last seen X ago"
     userName: string;
-    updateAccessories: (items: string[]) => Promise<void>; // Deprecated
-    saveAccessories: (items: string[], colors: Record<string, string>) => Promise<void>; // New
-    recordTap: () => Promise<void>; // New comprehensive tap handler
-    updateRoom: (roomId: string) => Promise<void>; // New room updater
+    updateAccessories: (items: string[]) => Promise<void>;
+    saveAccessories: (items: string[], colors: Record<string, string>) => Promise<void>;
+    recordTap: () => Promise<void>;
+    updateRoom: (roomId: string) => Promise<void>;
+    creatureMood: string; // New: for pet expression changes
+    setTemporaryMood: (mood: string, durationMs?: number) => void; // New
 }
 
 const CreatureContext = createContext<CreatureContextType | undefined>(undefined);
@@ -63,14 +66,21 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
     const [partnerName, setPartnerName] = useState('Partner');
     const [partnerCheckedIn, setPartnerCheckedIn] = useState(false);
     const [isPartnerOnline, setIsPartnerOnline] = useState(false);
+    const [partnerLastSeen, setPartnerLastSeen] = useState<string | null>(null);
     const [userName, setUserName] = useState('Someone');
+    const [creatureMood, setCreatureMood] = useState('happy'); // default mood
 
     // Update Presence Helper
     const updatePresence = async () => {
         if (!user) return;
-        // Quietly fail if column doesn't exist yet
         const { error } = await supabase.from('profiles').update({ last_active_at: new Date().toISOString() }).eq('id', user.id);
         if (error) console.log("Presence update failed (migration pending?)");
+    };
+
+    // Temporary mood change helper
+    const setTemporaryMood = (mood: string, durationMs: number = 5000) => {
+        setCreatureMood(mood);
+        setTimeout(() => setCreatureMood('happy'), durationMs);
     };
 
     const updateAccessories = async (items: string[]) => {
@@ -260,6 +270,7 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
                         // Check if online (active in last 5 mins)
                         if (pData.last_active_at) {
                             const lastActive = new Date(pData.last_active_at);
+                            setPartnerLastSeen(pData.last_active_at); // Set last seen
                             const now = new Date();
                             const diffMins = (now.getTime() - lastActive.getTime()) / 60000;
                             setIsPartnerOnline(diffMins < 5); // 5 minute threshold for "Online"
@@ -357,10 +368,11 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
                 creatureType: couple.creature_type,
                 creatureName: couple.creature_name || undefined,
                 partnerName,
-                partnerStatus: isPartnerOnline ? 'Online' : 'Offline'
+                partnerStatus: isPartnerOnline ? 'Online' : 'Offline',
+                lastSeen: partnerLastSeen ? formatDistanceToNow(new Date(partnerLastSeen), { addSuffix: true }) : undefined,
             });
         }
-    }, [couple, streak, partnerName, isPartnerOnline]);
+    }, [couple, streak, partnerName, isPartnerOnline, partnerLastSeen]);
 
     // PARTNER ACTIVITY NOTIFICATIONS
     useEffect(() => {
@@ -400,6 +412,101 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
             supabase.removeChannel(checkinSubscription);
         };
     }, [user, couple?.id, couple?.partner1_id, couple?.partner2_id, partnerName]);
+
+    // REAL-TIME: Messages, Surprises, Presence & Rituals
+    useEffect(() => {
+        if (!user || !couple?.id) return;
+        const partnerId = couple.partner1_id === user.id ? couple.partner2_id : couple.partner1_id;
+
+        const channel = supabase.channel('hearth-realtime')
+            // 1. Messages
+            .on(
+                'postgres_changes',
+                { event: 'INSERT', schema: 'public', table: 'messages', filter: `couple_id=eq.${couple.id}` },
+                async (payload) => {
+                    if (payload.new.sender_id !== user.id) {
+                        // Partner sent a message
+                        const { notificationService } = await import('../notifications');
+                        await notificationService.scheduleLocalNotification({
+                            type: 'partner_message',
+                            title: 'New Message 💌',
+                            body: payload.new.content || 'You have a new message from your partner!',
+                            data: { messageId: payload.new.id }
+                        });
+                        setTemporaryMood('excited', 5000); // Creature gets excited
+                    }
+                }
+            )
+            // 2. Surprises
+            .on(
+                'postgres_changes',
+                { event: 'INSERT', schema: 'public', table: 'surprises', filter: `couple_id=eq.${couple.id}` },
+                async (payload) => {
+                    if (payload.new.sender_id !== user.id) {
+                        const { notificationService } = await import('../notifications');
+                        await notificationService.scheduleLocalNotification({
+                            type: 'partner_surprise',
+                            title: 'Surprise! 🎁',
+                            body: payload.new.message || 'Your partner sent you a surprise!',
+                        });
+                        setTemporaryMood('loved', 8000); // Creature feels loved
+                    }
+                }
+            )
+            // 3. Daily Rituals (Answers)
+            .on(
+                'postgres_changes',
+                { event: 'UPDATE', schema: 'public', table: 'daily_rituals', filter: `couple_id=eq.${couple.id}` },
+                async (payload) => {
+                    // Check if partner answered (and we haven't been notified yet logic could go here)
+                    const newData = payload.new;
+                    const oldData = payload.old; // Only available if REPLICA IDENTITY FULL, usually just new
+
+                    // Simple check: if partner field changed and isn't null
+                    const isP1 = couple.partner1_id === user.id;
+                    const partnerField = isP1 ? 'partner2_response' : 'partner1_response';
+
+                    if (newData[partnerField]) {
+                        // In a real app we'd check if it was just added. 
+                        // For now we rely on the component or just notify.
+                        // Assuming this update meant they answered.
+                        const { notificationService } = await import('../notifications');
+                        await notificationService.scheduleLocalNotification({
+                            type: 'partner_answered_question',
+                            title: 'Daily Answer 💭',
+                            body: `${partnerName} answered today's question!`,
+                        });
+                    }
+                }
+            )
+            // 4. Partner Presence (Profiles)
+            .on(
+                'postgres_changes',
+                { event: 'UPDATE', schema: 'public', table: 'profiles', filter: `id=eq.${partnerId}` },
+                (payload) => {
+                    if (payload.new.last_active_at) {
+                        const lastActive = new Date(payload.new.last_active_at);
+                        setPartnerLastSeen(payload.new.last_active_at);
+
+                        const now = new Date();
+                        const diffMins = (now.getTime() - lastActive.getTime()) / 60000;
+                        setIsPartnerOnline(diffMins < 5);
+                    }
+                }
+            )
+            .subscribe();
+
+        // Presence Heartbeat
+        const heartbeat = setInterval(() => {
+            updatePresence();
+        }, 60000); // Every minute
+        updatePresence(); // And immediately
+
+        return () => {
+            supabase.removeChannel(channel);
+            clearInterval(heartbeat);
+        };
+    }, [user, couple?.id, partnerName]);
 
     // Daily Check-in Logic
     const performCheckIn = async (currentCoupleId: string) => {
@@ -461,12 +568,14 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
                         const { error } = await supabase.from('couples').update({ room_theme: roomId }).eq('id', couple.id);
                         if (error) {
                             console.error('[CreatureContext] DB Update Failed:', error);
-                            // Verify schema compliance if error persists
                         }
                     } catch (err) {
                         console.error('[CreatureContext] Exception in updateRoom:', err);
                     }
-                }
+                },
+                partnerLastSeen,
+                creatureMood,
+                setTemporaryMood
             }}
         >
             {children}

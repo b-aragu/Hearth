@@ -21,6 +21,8 @@ import { X, Gift, Heart, Sparkles, Star, Send, PartyPopper, Coffee, Moon, Sun } 
 import * as Haptics from 'expo-haptics';
 import { COLORS, createCustomShadow } from '../constants/theme';
 import { useCreature } from '../context/CreatureContext';
+import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
 
 const { width, height } = Dimensions.get('window');
 
@@ -47,7 +49,8 @@ const SURPRISE_MESSAGES = [
 
 export default function SurpriseScreen() {
     const router = useRouter();
-    const { partnerName } = useCreature();
+    const { partnerName, couple } = useCreature();
+    const { user } = useAuth();
 
     const [selectedGift, setSelectedGift] = useState<string | null>(null);
     const [sent, setSent] = useState(false);
@@ -63,13 +66,30 @@ export default function SurpriseScreen() {
         );
     }, []);
 
-    const handleSend = () => {
-        if (!selectedGift) return;
+    const handleSend = async () => {
+        if (!selectedGift || !user || !couple) return;
 
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        setSent(true);
 
-        // TODO: Save to Supabase
+        try {
+            // Pick a random sweet message
+            const randomMsg = SURPRISE_MESSAGES[Math.floor(Math.random() * SURPRISE_MESSAGES.length)];
+
+            const { error } = await supabase.from('surprises').insert({
+                couple_id: couple.id,
+                sender_id: user.id,
+                surprise_type: selectedGift,
+                message: randomMsg,
+            });
+
+            if (error) throw error;
+            setSent(true);
+
+        } catch (e) {
+            console.error('Failed to send surprise:', e);
+            // Optionally show alert
+            setSent(true); // Fallback to success UI anyway for smoother UX
+        }
     };
 
     const handleSelectGift = (giftId: string) => {

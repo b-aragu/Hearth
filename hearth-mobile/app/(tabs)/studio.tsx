@@ -16,6 +16,7 @@ import Animated, {
     Easing,
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
+import { ChevronUp, ChevronDown } from 'lucide-react-native';
 import { COLORS, SHADOWS, SPACING, GRADIENTS, RADIUS } from '../../constants/theme';
 import { RoomBackground, ROOM_THEMES } from '../../components/RoomBackground';
 
@@ -195,7 +196,9 @@ export default function StudioScreen() {
     });
 
     useEffect(() => {
-        panelTranslateY.value = withSpring(isPanelCollapsed ? 300 : 0, { damping: 15 });
+        // Collapse to show ~120px handle above tab bar (tab bar is 72px + 24px bottom)
+        // Panel height is 48% (~400px on most phones), so we translate less to keep handle visible
+        panelTranslateY.value = withSpring(isPanelCollapsed ? 280 : 0, { damping: 15 });
     }, [isPanelCollapsed]);
 
 
@@ -301,15 +304,25 @@ export default function StudioScreen() {
             <Animated.View style={[styles.panel, panelAnimatedStyle]}>
                 {/* Visual Handle with large touch target */}
                 <Pressable
-                    onPress={() => setIsPanelCollapsed(!isPanelCollapsed)}
+                    onPress={() => {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        setIsPanelCollapsed(!isPanelCollapsed);
+                    }}
                     style={{
                         width: '100%',
-                        height: 40,
+                        height: 48,
                         alignItems: 'center',
-                        justifyContent: 'center'
+                        justifyContent: 'center',
+                        flexDirection: 'row',
+                        gap: 8,
                     }}
                 >
                     <View style={styles.panelHandle} />
+                    {isPanelCollapsed ? (
+                        <ChevronUp size={20} color={COLORS.textMuted} />
+                    ) : (
+                        <ChevronDown size={20} color={COLORS.textMuted} />
+                    )}
                 </Pressable>
 
                 <ScrollView

@@ -16,79 +16,195 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { X, Send, Heart, Sparkles, CheckCircle2, Clock } from 'lucide-react-native';
+import { X, Send, Heart, Sparkles, CheckCircle2, Clock, Bell } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
-import { COLORS, SHADOWS, GRADIENTS, createCustomShadow } from '../../constants/theme';
+import { COLORS, createCustomShadow } from '../../constants/theme';
 import { useCreature } from '../../context/CreatureContext';
 import { useAuth } from '../../context/AuthContext';
+import { supabase } from '../../lib/supabase';
+import { getQuestionForDay, getQuestionNumber } from '../../constants/questions';
 
 const { width, height } = Dimensions.get('window');
 
-// Daily question pool - rotate based on day
-const DAILY_QUESTIONS = [
-    "What made you smile today?",
-    "What's one thing you're grateful for about us?",
-    "If we could go anywhere tomorrow, where would it be?",
-    "What's your favorite memory of us this week?",
-    "What song reminds you of me?",
-    "What's something new you'd like to try together?",
-    "What moment today made you think of me?",
-    "If you could relive one of our dates, which would it be?",
-    "What's one thing I do that makes you feel loved?",
-    "What dreamy adventure should we plan next?",
-    "What's the funniest thing that happened today?",
-    "What's a small thing I could do to make your day better?",
-    "What's one goal we should work towards together?",
-    "What made you fall in love with me?",
-    "What's something you've never told me but want to?",
-];
-
-// Get today's question based on date
-const getTodaysQuestion = () => {
-    const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
-    return DAILY_QUESTIONS[dayOfYear % DAILY_QUESTIONS.length];
-};
+interface RitualData {
+    id: string;
+    partner1_response: { text: string; user_id: string; timestamp: string } | null;
+    partner2_response: { text: string; user_id: string; timestamp: string } | null;
+    completed_at: string | null;
+}
 
 export default function DailyQuestionScreen() {
     const router = useRouter();
-    const { couple, partnerName } = useCreature();
-    const { profile, user } = useAuth();
+    const { couple, partnerName, daysTogether, userName } = useCreature();
+    const { user } = useAuth();
 
     const [answer, setAnswer] = useState('');
-    const [submitted, setSubmitted] = useState(false);
-    const [partnerAnswered, setPartnerAnswered] = useState(false);
-    const [partnerAnswer, setPartnerAnswer] = useState('');
-    const [bothRevealed, setBothRevealed] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+    const [ritual, setRitual] = useState<RitualData | null>(null);
 
-    const question = getTodaysQuestion();
+    // Derived states
+    const question = getQuestionForDay(daysTogether || 1);
+    const questionNumber = getQuestionNumber(daysTogether || 1);
+
+    const isPartner1 = couple?.partner1_id === user?.id;
+    const myResponse = isPartner1 ? ritual?.partner1_response : ritual?.partner2_response;
+    const partnerResponse = isPartner1 ? ritual?.partner2_response : ritual?.partner1_response;
+
+    const hasSubmitted = !!myResponse;
+    const partnerHasSubmitted = !!partnerResponse;
+    const bothAnswered = hasSubmitted && partnerHasSubmitted;
+
+    const [showAnswers, setShowAnswers] = useState(false);
+
     const buttonScale = useSharedValue(1);
     const cardGlow = useSharedValue(0);
 
     useEffect(() => {
-        // Animate card glow
         cardGlow.value = withSequence(
             withTiming(0.3, { duration: 1500 }),
             withTiming(0.15, { duration: 1500 })
         );
     }, []);
 
+    // Load/Create today's ritual
+    useEffect(() => {
+        if (!couple?.id) return;
+        loadOrCreateRitual();
+    }, [couple?.id, daysTogether]);
+
+    const loadOrCreateRitual = async () => {
+        if (!couple?.id) return;
+
+        setIsLoading(true);
+        try {
+            const today = new Date().toISOString().split('T')[0];
+
+            // Try to load existing ritual for today
+            const { data: existing, error: loadError } = await supabase
+                .from('daily_rituals')
+                .select('id, partner1_response, partner2_response, completed_at')
+                .eq('couple_id', couple.id)
+                .eq('date', today)
+                .eq('ritual_type', 'daily_question')
+                .maybeSingle();
+
+            if (loadError) throw loadError;
+
+            if (existing) {
+                setRitual(existing);
+            } else {
+                // Create new ritual for today
+                const { data: newRitual, error: createError } = await supabase
+                    .from('daily_rituals')
+                    .insert({
+                        couple_id: couple.id,
+                        date: today,
+                        ritual_type: 'daily_question',
+                        prompt: question
+                    })
+                    .select('id, partner1_response, partner2_response, completed_at')
+                    .single();
+
+                if (createError) throw createError;
+                setRitual(newRitual);
+            }
+        } catch (err) {
+            console.error('Error loading ritual:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Real-time subscription for partner's answer
+    useEffect(() => {
+        if (!ritual?.id) return;
+
+        const subscription = supabase
+            .channel(`ritual-${ritual.id}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'daily_rituals',
+                    filter: `id=eq.${ritual.id}`
+                },
+                (payload) => {
+                    console.log('Real-time update:', payload.new);
+                    setRitual(payload.new as RitualData);
+
+                    // If partner just answered, show notification-style feedback
+                    const newData = payload.new as RitualData;
+                    const newPartnerResponse = isPartner1 ? newData.partner2_response : newData.partner1_response;
+                    if (newPartnerResponse && !partnerResponse) {
+                        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                    }
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(subscription);
+        };
+    }, [ritual?.id, isPartner1, partnerResponse]);
+
     const handleSubmit = async () => {
-        if (!answer.trim()) return;
+        if (!answer.trim() || !ritual?.id || !user?.id) return;
 
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        setSubmitted(true);
+        setIsSaving(true);
 
-        // TODO: Save to Supabase daily_rituals table
-        // For now, simulate partner response for demo
-        setTimeout(() => {
-            setPartnerAnswered(true);
-            setPartnerAnswer("I thought about our morning coffee together ☕💕");
-        }, 2000);
+        try {
+            const responseData = {
+                text: answer.trim(),
+                user_id: user.id,
+                timestamp: new Date().toISOString()
+            };
+
+            const updateField = isPartner1 ? 'partner1_response' : 'partner2_response';
+
+            // Check if partner already answered
+            const partnerAlreadyAnswered = isPartner1 ? ritual.partner2_response : ritual.partner1_response;
+
+            const updateData: any = {
+                [updateField]: responseData
+            };
+
+            // If both answered, mark as completed
+            if (partnerAlreadyAnswered) {
+                updateData.completed_at = new Date().toISOString();
+            }
+
+            const { error } = await supabase
+                .from('daily_rituals')
+                .update(updateData)
+                .eq('id', ritual.id);
+
+            if (error) throw error;
+
+            // Update local state
+            setRitual(prev => prev ? {
+                ...prev,
+                [updateField]: responseData,
+                completed_at: partnerAlreadyAnswered ? new Date().toISOString() : null
+            } : null);
+
+            // Send notification to partner (via edge function or local trigger)
+            // This would be handled by a Supabase Edge Function in production
+            console.log(`[NOTIFICATION] Partner answered daily question!`);
+
+        } catch (err) {
+            console.error('Error saving answer:', err);
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     const handleReveal = () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-        setBothRevealed(true);
+        setShowAnswers(true);
     };
 
     const buttonStyle = useAnimatedStyle(() => ({
@@ -98,6 +214,14 @@ export default function DailyQuestionScreen() {
     const cardGlowStyle = useAnimatedStyle(() => ({
         opacity: cardGlow.value,
     }));
+
+    if (isLoading) {
+        return (
+            <View style={{ flex: 1, backgroundColor: '#FDF8F6', alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ fontFamily: 'DMSans_400Regular', color: COLORS.textMuted }}>Loading today's question...</Text>
+            </View>
+        );
+    }
 
     return (
         <View style={{ flex: 1, backgroundColor: '#FDF8F6' }}>
@@ -141,10 +265,15 @@ export default function DailyQuestionScreen() {
                             <X size={20} color={COLORS.textSecondary} />
                         </Pressable>
 
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                            <Sparkles size={16} color="#6BA3B2" />
-                            <Text style={{ fontFamily: 'Outfit_600SemiBold', fontSize: 14, color: '#4A8A99' }}>
-                                Daily Question
+                        <View style={{ alignItems: 'center' }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                                <Sparkles size={16} color="#6BA3B2" />
+                                <Text style={{ fontFamily: 'Outfit_600SemiBold', fontSize: 14, color: '#4A8A99' }}>
+                                    Day {daysTogether || 1}
+                                </Text>
+                            </View>
+                            <Text style={{ fontFamily: 'DMSans_400Regular', fontSize: 11, color: COLORS.textMuted }}>
+                                Question {questionNumber} of 100
                             </Text>
                         </View>
 
@@ -183,10 +312,10 @@ export default function DailyQuestionScreen() {
                                 >
                                     <Text style={{
                                         fontFamily: 'Outfit_700Bold',
-                                        fontSize: 24,
+                                        fontSize: 22,
                                         color: '#2A6574',
                                         textAlign: 'center',
-                                        lineHeight: 32,
+                                        lineHeight: 30,
                                         marginBottom: 8,
                                     }}>
                                         {question}
@@ -205,7 +334,7 @@ export default function DailyQuestionScreen() {
                         </Animated.View>
 
                         {/* Answer Section */}
-                        {!submitted ? (
+                        {!hasSubmitted ? (
                             <Animated.View
                                 entering={FadeInUp.delay(300).duration(400)}
                                 style={{ marginTop: 24 }}
@@ -248,11 +377,11 @@ export default function DailyQuestionScreen() {
                                         onPress={handleSubmit}
                                         onPressIn={() => { buttonScale.value = withSpring(0.96); }}
                                         onPressOut={() => { buttonScale.value = withSpring(1); }}
-                                        disabled={!answer.trim()}
+                                        disabled={!answer.trim() || isSaving}
                                         style={{ marginTop: 16 }}
                                     >
                                         <LinearGradient
-                                            colors={answer.trim() ? ['#6BA3B2', '#4A8A99'] : ['#D0D0D0', '#C0C0C0']}
+                                            colors={answer.trim() && !isSaving ? ['#6BA3B2', '#4A8A99'] : ['#D0D0D0', '#C0C0C0']}
                                             start={{ x: 0, y: 0 }}
                                             end={{ x: 1, y: 1 }}
                                             style={{
@@ -271,13 +400,13 @@ export default function DailyQuestionScreen() {
                                                 fontSize: 16,
                                                 color: '#FFF',
                                             }}>
-                                                Share Answer
+                                                {isSaving ? 'Saving...' : 'Share Answer'}
                                             </Text>
                                         </LinearGradient>
                                     </Pressable>
                                 </Animated.View>
                             </Animated.View>
-                        ) : !bothRevealed ? (
+                        ) : !showAnswers ? (
                             /* Waiting for partner / Ready to reveal */
                             <Animated.View
                                 entering={FadeIn.duration(500)}
@@ -300,7 +429,7 @@ export default function DailyQuestionScreen() {
                                     </Text>
                                 </View>
 
-                                {partnerAnswered ? (
+                                {bothAnswered ? (
                                     /* Both answered - reveal button */
                                     <Pressable
                                         onPress={handleReveal}
@@ -337,27 +466,53 @@ export default function DailyQuestionScreen() {
                                     /* Waiting for partner */
                                     <View style={{ alignItems: 'center' }}>
                                         <View style={{
-                                            flexDirection: 'row',
+                                            width: 60,
+                                            height: 60,
+                                            borderRadius: 30,
+                                            backgroundColor: 'rgba(232, 180, 184, 0.15)',
                                             alignItems: 'center',
-                                            gap: 8,
-                                            marginBottom: 8,
+                                            justifyContent: 'center',
+                                            marginBottom: 16,
                                         }}>
-                                            <Clock size={16} color={COLORS.textMuted} />
-                                            <Text style={{
-                                                fontFamily: 'DMSans_500Medium',
-                                                fontSize: 14,
-                                                color: COLORS.textSecondary,
-                                            }}>
-                                                Waiting for {partnerName || 'partner'}...
-                                            </Text>
+                                            <Clock size={28} color="#E8B4B8" />
                                         </View>
                                         <Text style={{
+                                            fontFamily: 'Outfit_600SemiBold',
+                                            fontSize: 16,
+                                            color: COLORS.textPrimary,
+                                            marginBottom: 4,
+                                        }}>
+                                            Waiting for {partnerName || 'partner'}...
+                                        </Text>
+                                        <Text style={{
                                             fontFamily: 'DMSans_400Regular',
-                                            fontSize: 12,
+                                            fontSize: 13,
                                             color: COLORS.textMuted,
+                                            textAlign: 'center',
                                         }}>
                                             You'll both see answers once they respond
                                         </Text>
+
+                                        {/* Notification hint */}
+                                        <View style={{
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                            gap: 6,
+                                            marginTop: 20,
+                                            backgroundColor: 'rgba(107, 163, 178, 0.1)',
+                                            paddingHorizontal: 14,
+                                            paddingVertical: 8,
+                                            borderRadius: 16,
+                                        }}>
+                                            <Bell size={14} color="#6BA3B2" />
+                                            <Text style={{
+                                                fontFamily: 'DMSans_400Regular',
+                                                fontSize: 12,
+                                                color: '#4A8A99',
+                                            }}>
+                                                You'll be notified when they answer
+                                            </Text>
+                                        </View>
                                     </View>
                                 )}
                             </Animated.View>
@@ -383,7 +538,7 @@ export default function DailyQuestionScreen() {
                                         textTransform: 'uppercase',
                                         letterSpacing: 0.5,
                                     }}>
-                                        You said
+                                        {userName || 'You'} said
                                     </Text>
                                     <Text style={{
                                         fontFamily: 'DMSans_400Regular',
@@ -391,7 +546,7 @@ export default function DailyQuestionScreen() {
                                         color: COLORS.textPrimary,
                                         lineHeight: 24,
                                     }}>
-                                        {answer}
+                                        {myResponse?.text}
                                     </Text>
                                 </View>
 
@@ -419,7 +574,7 @@ export default function DailyQuestionScreen() {
                                         color: COLORS.textPrimary,
                                         lineHeight: 24,
                                     }}>
-                                        {partnerAnswer}
+                                        {partnerResponse?.text}
                                     </Text>
                                 </View>
 

@@ -164,10 +164,12 @@ const HeaderCard = ({
     userName,
     partnerName,
     streak,
+    isPartnerOnline,
 }: {
     userName: string;
     partnerName: string;
     streak: number;
+    isPartnerOnline: boolean;
 }) => {
     // Floating hearts animation
     const heart1 = useSharedValue(0);
@@ -297,6 +299,20 @@ const HeaderCard = ({
                         <Text style={{ fontFamily: 'Outfit_600SemiBold', fontSize: 11, color: COLORS.textPrimary, marginTop: 3 }}>
                             {partnerName}
                         </Text>
+                        {/* Online Indicator */}
+                        {isPartnerOnline && (
+                            <View style={{
+                                position: 'absolute',
+                                top: 0,
+                                right: -2,
+                                width: 12,
+                                height: 12,
+                                borderRadius: 6,
+                                backgroundColor: '#4CD964',
+                                borderWidth: 2,
+                                borderColor: '#FFF8F5',
+                            }} />
+                        )}
                     </View>
                 </View>
             </LinearGradient>
@@ -576,7 +592,18 @@ const QuickActionsGrid = ({
 // --- MAIN SCREEN ---
 export default function HomeScreen() {
 
-    const { selectedCreature, couple, daysTogether, streak, partnerName, isPartnerOnline, recordTap } = useCreature();
+    const {
+        selectedCreature,
+        couple,
+        daysTogether,
+        streak,
+        partnerName,
+        isPartnerOnline,
+        partnerLastSeen,
+        creatureMood,
+        setTemporaryMood,
+        recordTap
+    } = useCreature();
     const { profile, signOut } = useAuth();
     const router = useRouter();
     const [showMessageModal, setShowMessageModal] = useState(false);
@@ -584,7 +611,7 @@ export default function HomeScreen() {
     const lastPetRef = useRef<string | null>(null);
     const [hearts, setHearts] = useState<{ id: number; x: number; emoji: string; size: number; delay: number }[]>([]);
     const [tapCount, setTapCount] = useState(0);
-    const [temporaryMood, setTemporaryMood] = useState<'happy' | null>(null);
+    // Local temporaryMood replaced by context.creatureMood
     const creatureScale = useSharedValue(1);
     const creatureRotate = useSharedValue(0);
     const creatureGlow = useSharedValue(0.2);
@@ -616,19 +643,36 @@ export default function HomeScreen() {
     }, []);
 
     const getMood = () => {
-        // Temporary mood override from recent pet
-        if (temporaryMood) return temporaryMood;
+        // 1. Context Mood (highest priority - from tap, message, surprise)
+        if (creatureMood && creatureMood !== 'happy') return creatureMood as any;
+
+        // 2. Time of day
         if (timeOfDay === 'night') return 'sleepy';
-        if (couple?.last_petted_at) {
-            const lastPet = new Date(couple.last_petted_at);
-            const now = new Date();
-            if ((now.getTime() - lastPet.getTime()) / (1000 * 60 * 60) > 24) return 'sad';
-        }
-        if (isPartnerOnline || streak > 3) return 'happy';
         if (timeOfDay === 'morning') return 'happy';
         return 'neutral';
     };
     const mood = getMood();
+
+    // Spawn hearts when mood changes to loved/excited
+    useEffect(() => {
+        if (creatureMood === 'loved' || creatureMood === 'excited') {
+            const timer = setInterval(() => {
+                const newHeart = {
+                    id: Date.now(),
+                    x: (Math.random() - 0.5) * 80,
+                    emoji: Math.random() > 0.5 ? '💖' : '✨',
+                    size: 24,
+                    delay: 0,
+                };
+                setHearts(prev => [...prev, newHeart]);
+            }, 800);
+
+            // Generate a few immediately
+            setHearts(prev => [...prev, { id: Date.now(), x: 0, emoji: '😍', size: 30, delay: 0 }]);
+
+            return () => clearInterval(timer);
+        }
+    }, [creatureMood]);
 
     const HEART_EMOJIS = ['💗', '💕', '💖', '✨', '🥰', '💓'];
 
@@ -662,9 +706,8 @@ export default function HomeScreen() {
             creatureRotate.value = withSpring(0, { damping: 15, stiffness: 150 });
         }, 250);
 
-        // Temporary happy mood for 3 seconds
-        setTemporaryMood('happy');
-        setTimeout(() => setTemporaryMood(null), 3000);
+        // Temporary happy mood for 3 seconds via Context
+        setTemporaryMood('happy', 3000);
 
         // Spawn 3-4 floating heart particles with staggered delays
         const numHearts = Math.floor(Math.random() * 2) + 3;
@@ -717,10 +760,12 @@ export default function HomeScreen() {
 
                     {/* Header Card */}
                     <View style={{ marginBottom: 16 }}>
+                        {/* Header Stats Card */}
                         <HeaderCard
-                            userName={userName}
+                            userName={profile?.display_name || 'You'}
                             partnerName={partnerName}
-                            streak={streak}
+                            streak={streak || 0}
+                            isPartnerOnline={isPartnerOnline}
                         />
                         {/* DEBUG: Reset Button to help user get back to onboarding */}
                         <Pressable
