@@ -328,6 +328,11 @@ export default function AuthScreen() {
                             </Text>
                         </Text>
                     </Pressable>
+
+                    {/* DEBUG: Show loaded API URL */}
+                    <Text style={{ textAlign: 'center', fontSize: 9, color: '#AAA', marginTop: 24, opacity: 0.5 }}>
+                        API: {process.env.EXPO_PUBLIC_SUPABASE_URL || 'UNDEFINED'}
+                    </Text>
                 </Animated.View>
             </KeyboardAvoidingView>
         </View>
