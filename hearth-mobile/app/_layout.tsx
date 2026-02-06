@@ -7,8 +7,15 @@ import { useEffect } from "react";
 import * as SplashScreen from 'expo-splash-screen';
 import { AuthProvider } from "../context/AuthContext";
 import { CreatureProvider } from "../context/CreatureContext";
+import { useNotificationHandler } from "../notifications";
 
 SplashScreen.preventAutoHideAsync();
+
+// Notification wrapper component
+function NotificationWrapper({ children }: { children: React.ReactNode }) {
+    useNotificationHandler();
+    return <>{children}</>;
+}
 
 export default function RootLayout() {
     const [fontsLoaded] = useFonts({
@@ -31,12 +38,15 @@ export default function RootLayout() {
     return (
         <AuthProvider>
             <CreatureProvider>
-                <Stack screenOptions={{ headerShown: false }}>
-                    <Stack.Screen name="(tabs)" />
-                    <Stack.Screen name="onboarding/select-creature" />
-                    <Stack.Screen name="auth" />
-                </Stack>
+                <NotificationWrapper>
+                    <Stack screenOptions={{ headerShown: false }}>
+                        <Stack.Screen name="(tabs)" />
+                        <Stack.Screen name="onboarding/select-creature" />
+                        <Stack.Screen name="auth" />
+                    </Stack>
+                </NotificationWrapper>
             </CreatureProvider>
         </AuthProvider>
     );
 }
+

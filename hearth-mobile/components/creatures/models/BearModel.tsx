@@ -8,7 +8,10 @@ import { Platform } from 'react-native';
 const AnimatedG = Animated.createAnimatedComponent(G);
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
-import { GlassesRound, HatBeanie, ScarfRed, BowTie } from '../parts/Accessories';
+import {
+    GlassesRound, HatBeanie, ScarfRed, BowTie,
+    Crown, Flower, HeartsHeadband, TopHat, Sunglasses, Monocle, Necklace, Cape, Backpack
+} from '../parts/Accessories';
 
 interface BearProps {
     mood: 'happy' | 'sad' | 'sleepy' | 'neutral';
@@ -89,11 +92,17 @@ export const BearModel = ({ mood, breathing, blink, color = '#E6CBA8', accessori
     });
 
     return (
-        <Svg viewBox="0 -40 200 280" width="100%" height="100%">
+        <Svg viewBox="0 -40 200 280" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
             {/* SHADOW - Centered and scaled */}
             <Circle cx="100" cy="175" r={40 * bodyScale} fill="rgba(69, 58, 43, 0.1)" transform={`translate(100, 175) scale(${1 + (1 - growthFactor) * 0.2}) translate(-100, -175)`} />
 
             <AnimatedG animatedProps={creatureProps}>
+
+                {/* BACK LAYER (Cape, Backpack) */}
+                <G transform={`translate(0, -15) translate(100, 160) scale(${bodyScale}) translate(-100, -160)`}>
+                    {accessories.includes('cape') && <Cape color={accessoryColors['cape']} />}
+                    {accessories.includes('backpack') && <Backpack color={accessoryColors['backpack']} />}
+                </G>
 
                 {/* BODY GROUP -> Scaled by Age */}
                 <G transform={`translate(0, -15) translate(100, 160) scale(${bodyScale}) translate(-100, -160)`}>
@@ -135,12 +144,27 @@ export const BearModel = ({ mood, breathing, blink, color = '#E6CBA8', accessori
                         <Circle cx="100" cy="115" r="20" fill="#F8EADB" />
                         <Circle cx="100" cy="110" r="8" fill="#4A3B32" />
 
+                        {/* MOOD EYEBROWS */}
+                        {mood === 'sad' && (
+                            <G transform={`translate(0, -5)`}>
+                                <Path d={`M ${leftEyeX - 5} ${95 + eyeYOffset - 8} L ${leftEyeX + 4} ${95 + eyeYOffset - 12}`} stroke="#4A3B32" strokeWidth="2" strokeLinecap="round" opacity={0.6} />
+                                <Path d={`M ${rightEyeX + 5} ${95 + eyeYOffset - 8} L ${rightEyeX - 4} ${95 + eyeYOffset - 12}`} stroke="#4A3B32" strokeWidth="2" strokeLinecap="round" opacity={0.6} />
+                            </G>
+                        )}
+                        {mood === 'happy' && (
+                            <G transform={`translate(0, -5)`}>
+                                <Path d={`M ${leftEyeX - 4} ${95 + eyeYOffset - 10} Q ${leftEyeX} ${95 + eyeYOffset - 14} ${leftEyeX + 4} ${95 + eyeYOffset - 10}`} stroke="#4A3B32" strokeWidth="2" strokeLinecap="round" opacity={0.6} />
+                                <Path d={`M ${rightEyeX - 4} ${95 + eyeYOffset - 10} Q ${rightEyeX} ${95 + eyeYOffset - 14} ${rightEyeX + 4} ${95 + eyeYOffset - 10}`} stroke="#4A3B32" strokeWidth="2" strokeLinecap="round" opacity={0.6} />
+                            </G>
+                        )}
+
                         {/* MOUTH - Dynamic based on Mood */}
                         {mood === 'happy' && (
                             <Path d="M 94 125 Q 100 132 106 125" stroke="#4A3B32" strokeWidth="2.5" strokeLinecap="round" fill="none" />
                         )}
                         {mood === 'sad' && (
-                            <Path d="M 96 128 Q 100 124 104 128" stroke="#4A3B32" strokeWidth="2" strokeLinecap="round" fill="none" />
+                            // Deeper frown
+                            <Path d="M 94 130 Q 100 120 106 130" stroke="#4A3B32" strokeWidth="2" strokeLinecap="round" fill="none" />
                         )}
                         {mood === 'sleepy' && (
                             <Circle cx="100" cy="126" r="2" fill="#4A3B32" opacity={0.6} />
@@ -203,6 +227,10 @@ export const BearModel = ({ mood, breathing, blink, color = '#E6CBA8', accessori
                     <G transform={`translate(0, ${lerp(-15, -25, growthFactor)})`}>
                         <G transform={`translate(100, 50) scale(${accessoryScale}) translate(-100, -50)`}>
                             {accessories.includes('hat_beanie') && <HatBeanie color={accessoryColors['hat_beanie']} />}
+                            {accessories.includes('crown') && <Crown color={accessoryColors['crown']} />}
+                            {accessories.includes('flower') && <Flower color={accessoryColors['flower']} />}
+                            {accessories.includes('hearts_headband') && <HeartsHeadband color={accessoryColors['hearts_headband']} />}
+                            {accessories.includes('top_hat') && <TopHat color={accessoryColors['top_hat']} />}
                         </G>
                     </G>
 
@@ -211,6 +239,8 @@ export const BearModel = ({ mood, breathing, blink, color = '#E6CBA8', accessori
                     <G transform={`translate(0, ${lerp(eyeYOffset - 30, eyeYOffset + 7, growthFactor)})`}>
                         <G transform={`translate(100, 100) scale(${accessoryScale}) translate(-100, -100)`}>
                             {accessories.includes('glasses') && <GlassesRound color={accessoryColors['glasses']} />}
+                            {accessories.includes('sunglasses') && <Sunglasses color={accessoryColors['sunglasses']} />}
+                            {accessories.includes('monocle') && <Monocle color={accessoryColors['monocle']} />}
                         </G>
                     </G>
 
@@ -219,7 +249,9 @@ export const BearModel = ({ mood, breathing, blink, color = '#E6CBA8', accessori
                     <G transform={`translate(0, ${lerp(15, 25, growthFactor)})`}>
                         <G transform={`translate(100, 130) scale(${accessoryScale}) translate(-100, -130)`}>
                             {accessories.includes('scarf') && <ScarfRed color={accessoryColors['scarf']} />}
+
                             {accessories.includes('bowtie') && <BowTie color={accessoryColors['bowtie']} />}
+                            {accessories.includes('necklace') && <Necklace color={accessoryColors['necklace']} />}
                         </G>
                     </G>
                 </G>

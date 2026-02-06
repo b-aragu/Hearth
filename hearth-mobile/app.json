@@ -13,9 +13,11 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.baragu.hearthmobile"
     },
     "android": {
+      "package": "com.baragu.hearthmobile",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -39,10 +41,24 @@
               "minHeight": "160dp",
               "description": "Keep track of your couple streak.",
               "previewImage": "./assets/widget-preview.png"
+            },
+            {
+              "name": "PartnerStatus",
+              "label": "Partner Status",
+              "minWidth": "160dp",
+              "minHeight": "160dp",
+              "description": "See if your partner is online.",
+              "previewImage": "./assets/widget-preview.png"
             }
           ]
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b4da5c0a-2807-4c5a-b4fc-5edbfd3f586a"
+      }
+    }
   }
 }

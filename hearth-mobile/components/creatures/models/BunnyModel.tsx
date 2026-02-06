@@ -50,49 +50,49 @@ export const BunnyModel = ({ mood, breathing, blink, color = '#E3D7C5', accessor
     const creatureProps = useAnimatedProps(() => {
         const transY = breathing.value * -5;
         if (isWeb) {
-            return { transform: `translate(0, ${transY})` };
+            return { transform: `translate(0, ${transY})` } as any;
         }
         return {
             transform: [
                 { translateY: transY }
             ]
-        };
+        } as any;
     });
 
     const blinkProps = useAnimatedProps(() => {
         const scaleY = 1 - blink.value;
         if (isWeb) {
-            return { transform: `scale(1, ${scaleY})` };
+            return { transform: `scale(1, ${scaleY})` } as any;
         }
         return {
             transform: [
                 { scaleY: scaleY }
             ]
-        };
+        } as any;
     });
 
     // Ear Twitch
     const earLeftProps = useAnimatedProps(() => {
         const rot = breathing.value * 5 - 5;
         if (isWeb) {
-            return { transform: `rotate(${rot}, 100, 100)` };
+            return { transform: `rotate(${rot}, 100, 100)` } as any;
         }
         return {
             transform: [
                 { rotate: `${rot}deg` } // Slight sway
             ]
-        };
+        } as any;
     });
     const earRightProps = useAnimatedProps(() => {
         const rot = breathing.value * -5 + 5;
         if (isWeb) {
-            return { transform: `rotate(${rot}, 100, 100)` };
+            return { transform: `rotate(${rot}, 100, 100)` } as any;
         }
         return {
             transform: [
                 { rotate: `${rot}deg` }
             ]
-        };
+        } as any;
     });
 
     return (
@@ -152,6 +152,14 @@ export const BunnyModel = ({ mood, breathing, blink, color = '#E3D7C5', accessor
                         {/* Bunny Nose is smaller/pinker */}
                         <Circle cx="100" cy="108" r="4" fill="#E8B4B8" />
 
+                        {/* MOOD EYEBROWS */}
+                        {mood === 'sad' && (
+                            <G transform={`translate(0, -5)`}>
+                                <Path d={`M ${leftEyeX - 5} ${95 + faceYOffset - 8} L ${leftEyeX + 4} ${95 + faceYOffset - 12}`} stroke="#8A6A5C" strokeWidth="1.5" strokeLinecap="round" opacity={0.6} />
+                                <Path d={`M ${rightEyeX + 5} ${95 + faceYOffset - 8} L ${rightEyeX - 4} ${95 + faceYOffset - 12}`} stroke="#8A6A5C" strokeWidth="1.5" strokeLinecap="round" opacity={0.6} />
+                            </G>
+                        )}
+
                         {/* Mouth */}
                         {mood === 'happy' && (
                             <Path d="M 95 116 Q 100 120 105 116" stroke="#8A6A5C" strokeWidth="2" strokeLinecap="round" fill="none" />
@@ -160,7 +168,8 @@ export const BunnyModel = ({ mood, breathing, blink, color = '#E3D7C5', accessor
                             <Path d="M 100 112 L 100 116 M 96 116 Q 100 116 104 116" stroke="#8A6A5C" strokeWidth="1.5" strokeLinecap="round" />
                         )}
                         {mood === 'sad' && (
-                            <Path d="M 96 118 Q 100 114 104 118" stroke="#8A6A5C" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+                            // Deeper frown
+                            <Path d="M 96 118 Q 100 112 104 118" stroke="#8A6A5C" strokeWidth="1.5" strokeLinecap="round" fill="none" />
                         )}
                     </G>
 

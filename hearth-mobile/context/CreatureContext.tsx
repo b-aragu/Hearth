@@ -3,6 +3,7 @@ import { CreatureType } from '../constants/creatures';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './AuthContext';
 import { differenceInDays, startOfDay } from 'date-fns';
+import { syncWidgetData } from '../widgets/WidgetSync';
 
 interface CoupleData {
     id: string;
@@ -18,6 +19,9 @@ interface CoupleData {
     matched_at: string | null;
     accessories?: string[]; // New field
     accessory_colors?: Record<string, string>; // New field
+    last_petted_at?: string; // New synced field
+    daily_tap_count?: { partner1: number; partner2: number; date: string }; // New synced field
+    room_theme?: string; // Room theme/style customization
 }
 
 interface ProfileData {
@@ -41,6 +45,8 @@ interface CreatureContextType {
     userName: string;
     updateAccessories: (items: string[]) => Promise<void>; // Deprecated
     saveAccessories: (items: string[], colors: Record<string, string>) => Promise<void>; // New
+    recordTap: () => Promise<void>; // New comprehensive tap handler
+    updateRoom: (roomId: string) => Promise<void>; // New room updater
 }
 
 const CreatureContext = createContext<CreatureContextType | undefined>(undefined);
@@ -133,8 +139,92 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
         }
     };
 
+
+
+    const recordTap = async () => {
+        if (!couple || !user) return;
+
+        const today = new Date().toISOString().split('T')[0];
+        const now = new Date().toISOString();
+
+        // Initialize or Reset counts if date changed
+        let currentCounts = couple.daily_tap_count || { partner1: 0, partner2: 0, date: today };
+        if (currentCounts.date !== today) {
+            currentCounts = { partner1: 0, partner2: 0, date: today };
+        }
+
+        // Increment local user's count
+        const isPartner1 = couple.partner1_id === user.id;
+        const newCounts = {
+            ...currentCounts,
+            [isPartner1 ? 'partner1' : 'partner2']: (currentCounts[isPartner1 ? 'partner1' : 'partner2'] || 0) + 1,
+            date: today
+        };
+
+        // Calculate total for milestones
+        const totalTaps = newCounts.partner1 + newCounts.partner2;
+
+        // Optimistic Update
+        setCouple(prev => prev ? { ...prev, daily_tap_count: newCounts, last_petted_at: now } : null);
+
+        try {
+            // Update DB
+            const { error } = await supabase
+                .from('couples')
+                .update({
+                    daily_tap_count: newCounts,
+                    last_petted_at: now
+                })
+                .eq('id', couple.id);
+
+            if (error) throw error;
+
+            // Check Milestones (10, 50, 100) - Only trigger if we just crossed it
+            const milestones = [10, 50, 100];
+            if (milestones.includes(totalTaps)) {
+                // Check if we already created a memory for this milestone today (to prevent dupes from race conditions)
+                // In a robust app we'd query DB, but for now we'll optimistically create it
+                // We use a unique constraint in DB or check locally if we had this state (simplified here)
+
+                await createTapMilestoneMemory(totalTaps, couple.id);
+            }
+
+        } catch (err) {
+            console.error("Failed to record tap:", err);
+            // Revert would happen on next fetch/sync
+        }
+    };
+
+    const createTapMilestoneMemory = async (taps: number, coupleId: string) => {
+        const messages: Record<number, { title: string; desc: string; emoji: string }> = {
+            10: { title: "Feeling Loved! 💕", desc: "You two have tapped your creature 10 times today!", emoji: "☺️" },
+            50: { title: "Cuddle Party! 🧸", desc: "50 taps! Your creature is overwhelming with joy.", emoji: "🥰" },
+            100: { title: "Maximum Love! 💖", desc: "100 taps! That's true dedication.", emoji: "🔥" }
+        };
+
+        const msg = messages[taps];
+        if (!msg) return;
+
+        // prevent duplicate milestone today
+        // const { data } = await supabase.from('memories').select('id').eq('type', 'Growth').ilike('title', msg.title).gte('created_at', startOfDay(new Date()).toISOString());
+        // if (data?.length) return;
+
+        await supabase.from('memories').insert({
+            couple_id: coupleId,
+            type: 'Growth',
+            title: msg.title,
+            description: msg.desc,
+            image_emoji: msg.emoji,
+            color_theme: 'coral',
+            created_at: new Date().toISOString()
+        });
+    };
+
     const fetchCouple = async () => {
-        if (!user) return;
+        if (!user) {
+            setLoading(false);
+            return;
+        }
 
         try {
             // Fetch Relationship - Reverting to * to be safe if column missing
@@ -215,10 +305,13 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
                     const dates = new Set(checkins.map(c => c.checkin_date));
                     setStreak(dates.size);
                 }
+            } else {
+                console.log("[CreatureContext] No couple data found for user");
             }
         } catch (error) {
-            console.log('Error fetching creature context:', error);
+            console.error('[CreatureContext] Error fetching creature context:', error);
         } finally {
+            console.log("[CreatureContext] Loading set to false");
             setLoading(false);
         }
     };
@@ -255,6 +348,93 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
         };
     }, [user, couple?.id]);
 
+    // WIDGET SYNC
+    useEffect(() => {
+        if (couple) {
+            syncWidgetData({
+                streak,
+                creatureType: couple.creature_type,
+                creatureName: couple.creature_name || undefined,
+                partnerName,
+                partnerStatus: isPartnerOnline ? 'Online' : 'Offline'
+            });
+        }
+    }, [couple, streak, partnerName, isPartnerOnline]);
+
+    // PARTNER ACTIVITY NOTIFICATIONS
+    useEffect(() => {
+        if (!user || !couple?.id) return;
+
+        const partnerId = couple.partner1_id === user.id ? couple.partner2_id : couple.partner1_id;
+        if (!partnerId) return;
+
+        // Subscribe to partner's check-ins
+        const checkinSubscription = supabase
+            .channel('partner-checkins')
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'daily_checkins',
+                    filter: `user_id=eq.${partnerId}`
+                },
+                async (payload) => {
+                    // Partner just checked in - trigger notification
+                    try {
+                        const { notificationService } = await import('../notifications');
+                        await notificationService.scheduleLocalNotification({
+                            type: 'partner_checked_in',
+                            title: `${partnerName} just checked in! 💕`,
+                            body: 'Your partner is thinking of you today',
+                        });
+                    } catch (e) {
+                        console.log('Notification skipped:', e);
+                    }
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(checkinSubscription);
+        };
+    }, [user, couple?.id, couple?.partner1_id, couple?.partner2_id, partnerName]);
+
+    // Daily Check-in Logic
+    const performCheckIn = async (currentCoupleId: string) => {
+        if (!user) return;
+
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+
+        const { data: existing } = await supabase
+            .from('memories')
+            .select('id')
+            .eq('couple_id', currentCoupleId)
+            .eq('type', 'Daily')
+            .gte('created_at', startOfToday.toISOString())
+            .maybeSingle();
+
+        if (existing) return;
+
+        console.log("Creating daily check-in...");
+        const { error } = await supabase.from('memories').insert({
+            couple_id: currentCoupleId,
+            type: 'Daily',
+            title: 'Daily Check-in',
+            description: 'Another day taking care of our creature together.',
+            color_theme: 'mint',
+            image_emoji: '📅'
+        });
+        if (error) console.log("Check-in error:", error);
+    };
+
+    useEffect(() => {
+        if (couple?.id) {
+            performCheckIn(couple.id);
+        }
+    }, [couple?.id]);
+
     return (
         <CreatureContext.Provider
             value={{
@@ -270,7 +450,22 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
                 isPartnerOnline,
                 userName,
                 updateAccessories,
-                saveAccessories
+                saveAccessories,
+                recordTap,
+                updateRoom: async (roomId: string) => {
+                    if (!couple) return;
+                    // Optimistic update
+                    setCouple(prev => prev ? { ...prev, room_theme: roomId } : null);
+                    try {
+                        const { error } = await supabase.from('couples').update({ room_theme: roomId }).eq('id', couple.id);
+                        if (error) {
+                            console.error('[CreatureContext] DB Update Failed:', error);
+                            // Verify schema compliance if error persists
+                        }
+                    } catch (err) {
+                        console.error('[CreatureContext] Exception in updateRoom:', err);
+                    }
+                }
             }}
         >
             {children}

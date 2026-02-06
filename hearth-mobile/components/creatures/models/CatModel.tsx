@@ -148,6 +148,20 @@ export const CatModel = ({ mood, breathing, blink, color = '#E0AFA0', accessorie
 
                     {/* MUZZLE & WHISKERS */}
                     <G transform={`translate(0, ${faceYOffset})`}>
+                        {/* MOOD EYEBROWS */}
+                        {mood === 'sad' && (
+                            <G transform={`translate(0, -5)`}>
+                                <Path d={`M ${leftEyeX - 6} ${100 + faceYOffset - 12} L ${leftEyeX + 4} ${100 + faceYOffset - 15}`} stroke="#4A3B32" strokeWidth="2" strokeLinecap="round" opacity={0.6} />
+                                <Path d={`M ${rightEyeX + 6} ${100 + faceYOffset - 12} L ${rightEyeX - 4} ${100 + faceYOffset - 15}`} stroke="#4A3B32" strokeWidth="2" strokeLinecap="round" opacity={0.6} />
+                            </G>
+                        )}
+                        {mood === 'happy' && (
+                            <G transform={`translate(0, -5)`}>
+                                <Path d={`M ${leftEyeX - 6} ${100 + faceYOffset - 15} Q ${leftEyeX} ${100 + faceYOffset - 20} ${leftEyeX + 6} ${100 + faceYOffset - 15}`} stroke="#4A3B32" strokeWidth="2" strokeLinecap="round" opacity={0.6} />
+                                <Path d={`M ${rightEyeX - 6} ${100 + faceYOffset - 15} Q ${rightEyeX} ${100 + faceYOffset - 20} ${rightEyeX + 6} ${100 + faceYOffset - 15}`} stroke="#4A3B32" strokeWidth="2" strokeLinecap="round" opacity={0.6} />
+                            </G>
+                        )}
+
                         {/* Nose - Tiny pink triangle */}
                         <Path d="M 96 114 Q 100 117 104 114 L 100 118 Z" fill="#F4E1D2" />
 
@@ -159,7 +173,8 @@ export const CatModel = ({ mood, breathing, blink, color = '#E0AFA0', accessorie
                             <Path d="M 100 118 L 100 120 M 95 121 Q 100 120 105 121" stroke="#8A6A5C" strokeWidth="1.5" strokeLinecap="round" fill="none" />
                         )}
                         {mood === 'sad' && (
-                            <Path d="M 96 122 Q 100 119 104 122" stroke="#8A6A5C" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+                            // Sad Inverted V
+                            <Path d="M 100 116 L 100 118 M 94 124 Q 97 120 100 122 Q 103 120 106 124" stroke="#8A6A5C" strokeWidth="1.5" strokeLinecap="round" fill="none" />
                         )}
 
                         {/* Whiskers - Distinctly Cat-like */}

@@ -27,6 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [loading, setLoading] = useState(true);
 
     const fetchProfile = async (userId: string) => {
+        console.log("[Auth] Fetching profile for:", userId);
         try {
             const { data, error } = await supabase
                 .from('profiles')
@@ -34,25 +35,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 .eq('id', userId)
                 .single();
 
-            if (data) setProfile(data);
+            if (error) {
+                console.error("[Auth] Profile fetch error:", error);
+                return;
+            }
+            if (data) {
+                console.log("[Auth] Profile found:", data.display_name);
+                setProfile(data);
+            }
         } catch (e) {
-            console.log("Error fetching profile:", e);
+            console.error("[Auth] Exception in fetchProfile:", e);
         }
     };
 
     useEffect(() => {
+        console.log("[Auth] Initializing AuthContext...");
         // 1. Check for initial session
         const checkSession = async () => {
             try {
                 const { data: { session } } = await supabase.auth.getSession();
+                console.log("[Auth] Initial session check:", session ? "User found" : "No user");
                 setSession(session);
                 setUser(session?.user ?? null);
                 if (session?.user) {
                     await fetchProfile(session.user.id);
                 }
             } catch (error) {
-                console.error('Error getting session:', error);
+                console.error('[Auth] Error getting session:', error);
             } finally {
+                console.log("[Auth] Loading set to false (init)");
                 setLoading(false);
             }
         };
@@ -60,7 +71,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         checkSession();
 
         // 2. Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            console.log("[Auth] Auth state changed:", event, session ? "User found" : "No user");
             setSession(session);
             setUser(session?.user ?? null);
             if (session?.user) {
