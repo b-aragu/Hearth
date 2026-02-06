@@ -1,5 +1,5 @@
-import { Tabs } from 'expo-router';
-import { View, Text, Platform, StyleSheet, Pressable } from 'react-native';
+import { Tabs, Redirect } from 'expo-router';
+import { View, Text, Platform, StyleSheet, Pressable, ActivityIndicator } from 'react-native'; // Added ActivityIndicator
 import { BlurView } from 'expo-blur';
 import { Home, BookOpen, Palette, Settings } from 'lucide-react-native';
 import Animated, {
@@ -12,6 +12,7 @@ import Animated, {
 import { useEffect } from 'react';
 import { COLORS, SHADOWS, TAB_BAR, createCustomShadow, createCustomGlow } from '../../constants/theme';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useAuth } from '../../context/AuthContext'; // Import Auth
 
 // --- PREMIUM FLOATING TAB ICON ---
 interface TabIconProps {
@@ -70,6 +71,21 @@ const TabIcon = ({ icon, iconFilled, focused, label }: TabIconProps) => {
 };
 
 export default function TabLayout() {
+    const { session, loading } = useAuth();
+
+    // Protect the tabs route
+    if (loading) {
+        return (
+            <View style={{ flex: 1, backgroundColor: COLORS.background, alignItems: 'center', justifyContent: 'center' }}>
+                <ActivityIndicator size="large" color={COLORS.accent} />
+            </View>
+        );
+    }
+
+    if (!session) {
+        return <Redirect href="/auth" />;
+    }
+
     return (
         <Tabs
             screenOptions={{
