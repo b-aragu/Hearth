@@ -236,7 +236,8 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
 
             if (data) {
                 setCouple(data);
-                setSelectedCreature(data.creature_type as CreatureType);
+                // Sync creature type with fallback to 'bunny' if not set
+                setSelectedCreature((data.creature_type as CreatureType) || 'bunny');
 
                 // 2. Fetch User Profile
                 const { data: uData } = await supabase.from('profiles').select('display_name').eq('id', user.id).single();

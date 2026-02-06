@@ -276,7 +276,7 @@ export default function StudioScreen() {
 
 
                 {/* Creature Preview */}
-                <Pressable onPress={() => setIsPanelCollapsed(true)} style={styles.previewContainer}>
+                <View style={styles.previewContainer}>
                     {/* Glow removed for cleaner look */}
 
                     <Animated.View>
@@ -288,7 +288,7 @@ export default function StudioScreen() {
                             daysTogether={daysTogether || 1}
                         />
                     </Animated.View>
-                </Pressable>
+                </View>
             </SafeAreaView >
 
             {/* Control Panel */}
@@ -410,12 +410,14 @@ export default function StudioScreen() {
                                         }}
                                         style={{
                                             width: '48%',
+                                            minHeight: 100,
                                             aspectRatio: 1.5,
                                             borderRadius: 16,
                                             overflow: 'hidden',
                                             borderWidth: 2,
                                             borderColor: currentRoom === id ? COLORS.accent : 'transparent',
-                                            position: 'relative'
+                                            position: 'relative',
+                                            backgroundColor: theme.colors[0] || '#E8E8E8',
                                         }}
                                     >
                                         <LinearGradient

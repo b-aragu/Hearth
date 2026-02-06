@@ -24,41 +24,32 @@ export default function Index() {
         );
     }
 
+    // Step 1: No session -> Login
     if (!session) {
         return <Redirect href="/auth" />;
     }
 
+    // Step 2: No couple record -> Start pairing
     if (!couple) {
-        // User has no couple data at all -> Go pair
         return <Redirect href="/onboarding/pairing" />;
     }
 
+    // Step 3: No partner joined yet -> Wait in pairing screen
     if (!couple.partner2_id) {
-        // User started a couple but no partner has joined -> Go wait in pairing screen
         return <Redirect href="/onboarding/pairing" />;
     }
 
+    // Step 4: No display name -> Get name
     if (!profile || !profile.display_name) {
-        // Pair exists, but we don't know who this user is -> Get Name
         return <Redirect href="/onboarding/name" />;
     }
 
-    // Checking if they completed onboarding (Assuming if they are here they have paired)
-    // We can check if they have a "valid" creature selected or if they've finished the flow.
-    // For now, if paired, we assume they need to pick a creature (or they already did).
-    // The select-creature screen should handle the case where a creature is already picked 
-    // (maybe by redirecting to tabs, or allowing re-selection). 
-    // BUT the prompt said "cannot adopt a pet... waiting for second one".
-    // So once paired => Creature Selection.
+    // Step 5: No creature selected -> Select creature together
+    if (!couple.creature_type) {
+        return <Redirect href="/onboarding/select-creature" />;
+    }
 
-    // Ideally we need a flag 'onboarding_complete' or simply check if they are in tabs.
-    // Let's assume if they have a couple and partner, they go to creature select.
-    // Creature Selection will handle redirecting to Tabs if already Done.
-
-    // Quick fix: Check if we are already in the App (Tabs) via context or just let the flow naturally happen.
-    // If I put Redirect to (tabs) here, they skip creature selection.
-    // If I put Redirect to select-creature, they go there.
-
-    // If matched and named, go to Main App (Home)
+    // All onboarding complete -> Go to main app
     return <Redirect href="/(tabs)" />;
 }
+
