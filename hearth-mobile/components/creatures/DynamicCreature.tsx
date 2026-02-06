@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { View } from 'react-native';
-import Animated, { useSharedValue, withRepeat, withTiming, withSequence, Easing, useDerivedValue, runOnJS } from 'react-native-reanimated';
+import Animated, { useSharedValue, withRepeat, withTiming, withSequence, Easing, useDerivedValue, runOnJS, useAnimatedStyle } from 'react-native-reanimated';
 import { BearModel } from './models/BearModel';
 import { BunnyModel } from './models/BunnyModel';
 import { CatModel } from './models/CatModel';
@@ -74,6 +74,13 @@ export const DynamicCreature = ({
         }
     };
 
+    const containerStyle = useAnimatedStyle(() => {
+        const breathScale = 1 + (breathing.value * 0.03); // 3% breathing pulse
+        return {
+            transform: [{ scale: finalScale * breathScale }]
+        };
+    });
+
     return (
         <View
             collapsable={false}
@@ -81,7 +88,7 @@ export const DynamicCreature = ({
         >
             <Animated.View
                 collapsable={false}
-                style={{ transform: [{ scale: finalScale }] }}
+                style={containerStyle}
             >
                 {renderModel()}
             </Animated.View>

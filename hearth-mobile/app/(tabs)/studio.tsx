@@ -276,10 +276,16 @@ export default function StudioScreen() {
 
 
                 {/* Creature Preview */}
-                <View style={styles.previewContainer}>
+                <Pressable
+                    style={styles.previewContainer}
+                    onPress={() => {
+                        Haptics.selectionAsync();
+                        setIsPanelCollapsed(!isPanelCollapsed);
+                    }}
+                >
                     {/* Glow removed for cleaner look */}
 
-                    <Animated.View>
+                    <Animated.View pointerEvents="none">
                         <DynamicCreature
                             creatureId={selectedCreature}
                             mood="happy"
@@ -288,7 +294,7 @@ export default function StudioScreen() {
                             daysTogether={daysTogether || 1}
                         />
                     </Animated.View>
-                </View>
+                </Pressable>
             </SafeAreaView >
 
             {/* Control Panel */}
