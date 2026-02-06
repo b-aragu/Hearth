@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Dimensions, Platform } from 'react-native';
+import { View, Text, Pressable, Dimensions, Platform, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
 
@@ -577,7 +577,7 @@ const QuickActionsGrid = ({
 export default function HomeScreen() {
 
     const { selectedCreature, couple, daysTogether, streak, partnerName, isPartnerOnline, recordTap } = useCreature();
-    const { profile } = useAuth();
+    const { profile, signOut } = useAuth();
     const router = useRouter();
     const [showMessageModal, setShowMessageModal] = useState(false);
 
@@ -722,6 +722,30 @@ export default function HomeScreen() {
                             partnerName={partnerName}
                             streak={streak}
                         />
+                        {/* DEBUG: Reset Button to help user get back to onboarding */}
+                        <Pressable
+                            onPress={() => {
+                                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+                                Alert.alert("Reset App?", "This will sign you out so you can test onboarding again.", [
+                                    { text: "Cancel", style: "cancel" },
+                                    {
+                                        text: "Reset", style: "destructive", onPress: () => {
+                                            signOut();
+                                        }
+                                    }
+                                ]);
+                            }}
+                            style={{
+                                alignSelf: 'center',
+                                marginTop: 8,
+                                backgroundColor: 'rgba(0,0,0,0.05)',
+                                paddingHorizontal: 12,
+                                paddingVertical: 4,
+                                borderRadius: 10
+                            }}
+                        >
+                            <Text style={{ fontSize: 10, color: '#999', fontFamily: 'DMSans_700Bold' }}>TAP TO RESET / LOGOUT</Text>
+                        </Pressable>
                     </View>
 
                     {/* Creature Area - Positioned at bottom of flex area, on ground level */}
