@@ -260,7 +260,7 @@ export const BearModel = ({ mood, breathing, blink, color = '#E6CBA8', accessori
                     </G>
                 </G>
             </G>
-        </G>
+
         </Svg >
     );
 };
