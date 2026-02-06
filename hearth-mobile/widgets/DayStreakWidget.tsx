@@ -5,19 +5,26 @@ export interface DayStreakWidgetProps {
     streak: string;
     creature: string;
     creatureName?: string;
+    isGlowing?: boolean;
 }
 
 export function DayStreakWidget({
     streak = "0",
     creature = "🐻",
     creatureName = "Companion",
+    isGlowing = false,
 }: DayStreakWidgetProps) {
+    const headerColor = isGlowing ? '#FFF9C4' : '#FFEBEE';
+    const headerText = isGlowing ? '#FBC02D' : '#9C4A5A';
+    const accentColor = isGlowing ? '#FBC02D' : '#D4847C';
+    const containerBg = isGlowing ? '#FFFDE7' : '#FFF0F5';
+
     return (
         <FlexWidget
             style={{
                 height: 'match_parent',
                 width: 'match_parent',
-                backgroundColor: '#FFF0F5', // Lavender Blush
+                backgroundColor: containerBg,
                 borderRadius: 24,
                 flexDirection: 'column',
                 justifyContent: 'center',
@@ -44,17 +51,17 @@ export function DayStreakWidget({
                     style={{
                         width: 'match_parent',
                         height: 38,
-                        backgroundColor: '#FFEBEE', // Soft Pink Header
+                        backgroundColor: headerColor,
                         flexDirection: 'row',
                         alignItems: 'center',
                         justifyContent: 'center'
                     }}
                 >
                     <TextWidget
-                        text="✨ TOGETHER"
+                        text={isGlowing ? "⚡ STREAK ACTIVE" : "✨ TOGETHER"}
                         style={{
                             fontSize: 10,
-                            color: '#9C4A5A',
+                            color: headerText,
                             letterSpacing: 2,
                             fontWeight: 'bold',
                         }}
@@ -82,7 +89,7 @@ export function DayStreakWidget({
                             style={{
                                 fontSize: 62,
                                 fontWeight: 'bold',
-                                color: '#D4847C', // Muted Coral
+                                color: accentColor,
                                 fontFamily: 'sans-serif-medium'
                             }}
                         />
@@ -90,7 +97,7 @@ export function DayStreakWidget({
                             text="DAYS"
                             style={{
                                 fontSize: 13,
-                                color: '#D4847C',
+                                color: accentColor,
                                 fontWeight: 'bold',
                                 marginTop: -10,
                             }}
@@ -103,7 +110,7 @@ export function DayStreakWidget({
                             flexDirection: 'row',
                             alignItems: 'center',
                             marginTop: 12,
-                            backgroundColor: '#FDF2F4',
+                            backgroundColor: isGlowing ? '#FFF9C4' : '#FDF2F4',
                             borderRadius: 10,
                             paddingHorizontal: 10,
                             paddingVertical: 5,

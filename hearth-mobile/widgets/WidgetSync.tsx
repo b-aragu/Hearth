@@ -21,6 +21,7 @@ interface SyncWidgetDataProps {
     partnerStatus: 'Online' | 'Offline' | 'Sleeping' | 'Away';
     lastSeen?: string;
     mood?: string;
+    streakGlowing?: boolean;
 }
 
 const getCreatureEmoji = (type: string) => {
@@ -61,6 +62,7 @@ export async function syncWidgetData({
     partnerStatus,
     lastSeen,
     mood,
+    streakGlowing,
 }: SyncWidgetDataProps) {
     if (Platform.OS !== 'android') return;
 
@@ -73,6 +75,7 @@ export async function syncWidgetData({
                     streak={streak.toString()}
                     creature={`${getCreatureEmoji(creatureType)} ${getMoodEmoji(mood)}`}
                     creatureName={creatureName}
+                    isGlowing={streakGlowing}
                 />
             ),
             widgetNotFound: () => {
