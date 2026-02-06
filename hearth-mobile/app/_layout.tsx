@@ -1,4 +1,5 @@
 import "../global.css";
+import "../widget-register"; // Register Android widget handlers
 import { Stack } from 'expo-router';
 import { useFonts } from 'expo-font';
 import { Outfit_400Regular, Outfit_700Bold } from '@expo-google-fonts/outfit';
