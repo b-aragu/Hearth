@@ -99,20 +99,25 @@ export const BunnyModel = ({ mood, breathing, blink, color = '#E3D7C5', accessor
 
     return (
         <Svg viewBox="0 0 200 300" width={200} height={300}>
-            {/* DIAGNOSTIC RED BOX - If you see this, SVG Works! */}
-            <Rect x="0" y="0" width="200" height="300" fill="red" opacity={0.3} />
+            {/* DIAGNOSTIC RED BOX - Using RGBA fill instead of opacity */}
+            <Rect x="0" y="0" width="200" height="300" fill="rgba(255, 0, 0, 0.2)" />
 
             {/* SHADOW */}
             <Circle cx="100" cy="175" r={40 * bodyScale} fill="rgba(69, 58, 43, 0.1)" />
 
-            {/* Main creature group - no animation on Android */}
+            {/* Main creature group */}
             <G {...(isAndroid ? {} : { animatedProps: creatureProps })}>
+
+                {/* BLUE DEBUG CIRCLE - Test if simple Circle inside G works */}
+                <Circle cx="50" cy="50" r="30" fill="blue" />
 
                 {/* TAIL (Behind Body) */}
                 <Circle cx="135" cy="180" r="14" fill="white" />
 
                 {/* BODY */}
                 <G transform={`translate(0, -15) translate(100, 160) scale(${bodyScale}) translate(-100, -160)`}>
+                    {/* GREEN DEBUG CIRCLE - Test if Transforms work */}
+                    <Circle cx="100" cy="160" r="30" fill="green" />
                     {/* Main Body - Slightly more pear shaped for bunny */}
                     <Ellipse cx="100" cy="165" rx="40" ry="45" fill={color} />
                     <Ellipse cx="100" cy="165" rx="25" ry="32" fill="#FFF8F0" opacity={0.7} />
