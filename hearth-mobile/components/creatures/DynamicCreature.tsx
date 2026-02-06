@@ -75,8 +75,14 @@ export const DynamicCreature = ({
     };
 
     return (
-        <View style={{ width: 250, height: 250, alignItems: 'center', justifyContent: 'center' }}>
-            <Animated.View style={{ transform: [{ scale: finalScale }] }}>
+        <View
+            collapsable={false}
+            style={{ width: 250, height: 250, alignItems: 'center', justifyContent: 'center' }}
+        >
+            <Animated.View
+                collapsable={false}
+                style={{ transform: [{ scale: finalScale }] }}
+            >
                 {renderModel()}
             </Animated.View>
         </View>

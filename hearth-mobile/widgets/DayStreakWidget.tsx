@@ -17,66 +17,69 @@ export function DayStreakWidget({
             style={{
                 height: 'match_parent',
                 width: 'match_parent',
-                backgroundColor: '#FFF9F0', // Warm cream - matches app theme
-                borderRadius: 24,
+                backgroundColor: '#FFF8F0', // Cream background
+                borderRadius: 22,
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                padding: 16,
+                padding: 12,
             }}
         >
-            {/* Creature Circle */}
+            {/* Inner Card Effect */}
             <FlexWidget
                 style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 24,
-                    backgroundColor: 'rgba(255, 183, 178, 0.25)', // Coral accent
+                    width: 'match_parent',
+                    height: 'match_parent',
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: 18,
+                    flexDirection: 'column',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    marginBottom: 8,
+                    padding: 4,
                 }}
             >
-                <TextWidget
-                    text={creature}
+                {/* Creature Circle */}
+                <FlexWidget
                     style={{
-                        fontSize: 28,
+                        width: 54,
+                        height: 54,
+                        borderRadius: 27,
+                        backgroundColor: '#FFEBEE', // Soft pink
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        marginBottom: 4,
+                    }}
+                >
+                    <TextWidget
+                        text={creature}
+                        style={{
+                            fontSize: 32,
+                        }}
+                    />
+                </FlexWidget>
+
+                {/* Streak Count */}
+                <TextWidget
+                    text={streak}
+                    style={{
+                        fontSize: 48,
+                        fontWeight: 'bold',
+                        color: '#D84315', // Deep Coral
+                    }}
+                />
+
+                {/* Days Together Label */}
+                <TextWidget
+                    text="DAYS OF LOVE"
+                    style={{
+                        fontSize: 9,
+                        color: '#A1887F',
+                        letterSpacing: 1.5,
+                        fontWeight: 'bold',
+                        marginTop: -4,
                     }}
                 />
             </FlexWidget>
-
-            {/* Streak Number */}
-            <TextWidget
-                text={streak}
-                style={{
-                    fontSize: 42,
-                    fontWeight: 'bold',
-                    color: '#FFB7B2', // Coral
-                }}
-            />
-
-            {/* Label */}
-            <TextWidget
-                text="STREAK"
-                style={{
-                    fontSize: 10,
-                    color: '#8A8A8A',
-                    letterSpacing: 2,
-                    fontWeight: 'bold',
-                }}
-            />
-
-            {/* Optional creature name */}
-            {creatureName && (
-                <TextWidget
-                    text={creatureName}
-                    style={{
-                        fontSize: 11,
-                        color: '#A0A0A0',
-                        marginTop: 4,
-                    }}
-                />
-            )}
         </FlexWidget>
     );
 }
