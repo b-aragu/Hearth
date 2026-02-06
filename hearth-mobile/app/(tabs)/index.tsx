@@ -729,8 +729,16 @@ export default function HomeScreen() {
                                 Alert.alert("Reset App?", "This will sign you out so you can test onboarding again.", [
                                     { text: "Cancel", style: "cancel" },
                                     {
-                                        text: "Reset", style: "destructive", onPress: () => {
-                                            signOut();
+                                        text: "NUCLEAR RESET", style: "destructive", onPress: async () => {
+                                            try {
+                                                const AsyncStorage = require('@react-native-async-storage/async-storage').default;
+                                                await AsyncStorage.clear();
+                                                await signOut();
+                                                // Force reload if possible, otherwise Alert
+                                                Alert.alert("Reset Complete", "Please close and reopen the app immediately.");
+                                            } catch (e) {
+                                                Alert.alert("Reset Failed", String(e));
+                                            }
                                         }
                                     }
                                 ]);

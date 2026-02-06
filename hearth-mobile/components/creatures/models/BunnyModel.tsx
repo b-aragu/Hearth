@@ -3,11 +3,10 @@ import Svg, { Circle, Path, G, Rect, Line, Ellipse } from 'react-native-svg';
 import Animated, { useAnimatedProps, useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 
 import { Platform } from 'react-native';
+import { GlassesRound, HatBeanie, ScarfRed, BowTie } from '../parts/Accessories';
 
 // Animated components
-const AnimatedG = Animated.createAnimatedComponent(G);
-
-import { GlassesRound, HatBeanie, ScarfRed, BowTie } from '../parts/Accessories';
+const AnimatedG = Platform.OS === 'android' ? G : Animated.createAnimatedComponent(G);
 
 interface BunnyProps {
     mood: 'happy' | 'sad' | 'sleepy' | 'neutral';
