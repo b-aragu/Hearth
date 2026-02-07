@@ -17,10 +17,10 @@ export const COLORS = {
     textSecondary: '#8A8585',
     textMuted: '#B5AEAE',
 
-    // Primary Accent - Soft Rose
-    accent: '#E8B4B8',
-    accentLight: '#F5E1E3',
-    accentDark: '#D49CA0',
+    // Primary Accent - Soft Coral (Hearth Theme)
+    accent: '#F0A8A8',
+    accentLight: '#FDE2E2',
+    accentDark: '#D68585',
 
     // Secondary Accent - Sage/Mint
     sage: '#B8D4C8',
