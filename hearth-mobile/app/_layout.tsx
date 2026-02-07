@@ -8,10 +8,8 @@ import { useEffect } from "react";
 import * as SplashScreen from 'expo-splash-screen';
 import { AuthProvider } from "../context/AuthContext";
 import { CreatureProvider } from "../context/CreatureContext";
+import { ActionQueueProvider } from "../context/ActionQueueContext";
 import { useNotificationHandler } from "../notifications";
-
-SplashScreen.preventAutoHideAsync();
-
 import { OfflineBanner } from "../components/OfflineBanner";
 
 // Notification wrapper component
@@ -24,6 +22,25 @@ function NotificationWrapper({ children }: { children: React.ReactNode }) {
         </>
     );
 }
+
+const linking = {
+    prefixes: ['hearth://', 'com.baragu.hearthmobile://'],
+    config: {
+        screens: {
+            '(tabs)': {
+                screens: {
+                    index: 'home',
+                    journal: 'memories',
+                    studio: 'style',
+                    settings: 'us',
+                },
+            },
+            'surprise': 'surprise',
+            'onboarding/select-creature': 'onboarding/select-creature',
+            'auth': 'auth',
+        },
+    },
+};
 
 export default function RootLayout() {
     const [fontsLoaded] = useFonts({
@@ -45,15 +62,17 @@ export default function RootLayout() {
 
     return (
         <AuthProvider>
-            <CreatureProvider>
-                <NotificationWrapper>
-                    <Stack screenOptions={{ headerShown: false }}>
-                        <Stack.Screen name="(tabs)" />
-                        <Stack.Screen name="onboarding/select-creature" />
-                        <Stack.Screen name="auth" />
-                    </Stack>
-                </NotificationWrapper>
-            </CreatureProvider>
+            <ActionQueueProvider>
+                <CreatureProvider>
+                    <NotificationWrapper>
+                        <Stack screenOptions={{ headerShown: false }}>
+                            <Stack.Screen name="(tabs)" />
+                            <Stack.Screen name="onboarding/select-creature" />
+                            <Stack.Screen name="auth" />
+                        </Stack>
+                    </NotificationWrapper>
+                </CreatureProvider>
+            </ActionQueueProvider>
         </AuthProvider>
     );
 }

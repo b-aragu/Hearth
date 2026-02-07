@@ -767,38 +767,8 @@ export default function HomeScreen() {
                             streak={streak || 0}
                             isPartnerOnline={isPartnerOnline}
                         />
-                        {/* DEBUG: Reset Button to help user get back to onboarding */}
-                        <Pressable
-                            onPress={() => {
-                                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-                                Alert.alert("Reset App?", "This will sign you out so you can test onboarding again.", [
-                                    { text: "Cancel", style: "cancel" },
-                                    {
-                                        text: "NUCLEAR RESET", style: "destructive", onPress: async () => {
-                                            try {
-                                                const AsyncStorage = require('@react-native-async-storage/async-storage').default;
-                                                await AsyncStorage.clear();
-                                                await signOut();
-                                                // Force reload if possible, otherwise Alert
-                                                Alert.alert("Reset Complete", "Please close and reopen the app immediately.");
-                                            } catch (e) {
-                                                Alert.alert("Reset Failed", String(e));
-                                            }
-                                        }
-                                    }
-                                ]);
-                            }}
-                            style={{
-                                alignSelf: 'center',
-                                marginTop: 8,
-                                backgroundColor: 'rgba(0,0,0,0.05)',
-                                paddingHorizontal: 12,
-                                paddingVertical: 4,
-                                borderRadius: 10
-                            }}
-                        >
-                            <Text style={{ fontSize: 10, color: '#999', fontFamily: 'DMSans_700Bold' }}>TAP TO RESET / LOGOUT</Text>
-                        </Pressable>
+
+
                     </View>
 
                     {/* Creature Area - Positioned at bottom of flex area, on ground level */}

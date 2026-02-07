@@ -22,6 +22,7 @@ import * as Haptics from 'expo-haptics';
 import { COLORS, createCustomShadow } from '../constants/theme';
 import { useCreature } from '../context/CreatureContext';
 import { useAuth } from '../context/AuthContext';
+import { useActionQueue } from '../context/ActionQueueContext';
 import { supabase } from '../lib/supabase';
 
 const { width, height } = Dimensions.get('window');
@@ -66,6 +67,8 @@ export default function SurpriseScreen() {
         );
     }, []);
 
+    const { queueAction } = useActionQueue();
+
     const handleSend = async () => {
         if (!selectedGift || !user || !couple) return;
 
@@ -75,14 +78,14 @@ export default function SurpriseScreen() {
             // Pick a random sweet message
             const randomMsg = SURPRISE_MESSAGES[Math.floor(Math.random() * SURPRISE_MESSAGES.length)];
 
-            const { error } = await supabase.from('surprises').insert({
+            // Send via ActionQueue
+            queueAction('SEND_SURPRISE', {
                 couple_id: couple.id,
                 sender_id: user.id,
                 surprise_type: selectedGift,
                 message: randomMsg,
             });
 
-            if (error) throw error;
             setSent(true);
 
         } catch (e) {

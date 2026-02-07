@@ -1,0 +1,17 @@
+/home/baragu/Documents/Hearth/hearth-mobile/node_modules/typescript/lib/_tsc.js:123168
+      throw e;
+      ^
+
+RangeError: Maximum call stack size exceeded
+    at checkExpressionWorker (/home/baragu/Documents/Hearth/hearth-mobile/node_modules/typescript/lib/_tsc.js:80891:33)
+    at checkExpression (/home/baragu/Documents/Hearth/hearth-mobile/node_modules/typescript/lib/_tsc.js:80846:32)
+    at checkNonNullExpression (/home/baragu/Documents/Hearth/hearth-mobile/node_modules/typescript/lib/_tsc.js:74853:29)
+    at getEffectsSignature (/home/baragu/Documents/Hearth/hearth-mobile/node_modules/typescript/lib/_tsc.js:70090:22)
+    at getTypeAtFlowCall (/home/baragu/Documents/Hearth/hearth-mobile/node_modules/typescript/lib/_tsc.js:70442:25)
+    at getTypeAtFlowNode (/home/baragu/Documents/Hearth/hearth-mobile/node_modules/typescript/lib/_tsc.js:70324:18)
+    at getFlowTypeOfReference (/home/baragu/Documents/Hearth/hearth-mobile/node_modules/typescript/lib/_tsc.js:70281:45)
+    at checkIdentifier (/home/baragu/Documents/Hearth/hearth-mobile/node_modules/typescript/lib/_tsc.js:72066:134)
+    at checkExpressionWorker (/home/baragu/Documents/Hearth/hearth-mobile/node_modules/typescript/lib/_tsc.js:80903:16)
+    at checkExpression (/home/baragu/Documents/Hearth/hearth-mobile/node_modules/typescript/lib/_tsc.js:80846:32)
+
+Node.js v25.1.0

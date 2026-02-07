@@ -17,6 +17,10 @@ import { X, Send, Heart, Sparkles } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { COLORS, SHADOWS, createCustomShadow } from '../constants/theme';
 
+import { useAuth } from '../context/AuthContext';
+import { useCreature } from '../context/CreatureContext';
+import { useActionQueue } from '../context/ActionQueueContext';
+
 const { width } = Dimensions.get('window');
 
 interface MessageModalProps {
@@ -49,6 +53,10 @@ export const MessageModal = ({ visible, onClose, partnerName = 'Partner' }: Mess
     const buttonScale = useSharedValue(1);
     const heartScale = useSharedValue(0);
 
+    const { user } = useAuth();
+    const { couple } = useCreature();
+    const { queueAction } = useActionQueue();
+
     useEffect(() => {
         if (visible) {
             setMessage('');
@@ -57,7 +65,7 @@ export const MessageModal = ({ visible, onClose, partnerName = 'Partner' }: Mess
     }, [visible]);
 
     const handleSend = async () => {
-        if (!message.trim()) return;
+        if (!message.trim() || !user || !couple) return;
 
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
@@ -69,7 +77,13 @@ export const MessageModal = ({ visible, onClose, partnerName = 'Partner' }: Mess
 
         setSent(true);
 
-        // TODO: Save message to Supabase
+        // Save message to Supabase via ActionQueue (offline support)
+        queueAction('SEND_MESSAGE', {
+            couple_id: couple.id,
+            sender_id: user.id,
+            content: message.trim(),
+            message_type: 'text',
+        });
 
         // Close after animation
         setTimeout(() => {

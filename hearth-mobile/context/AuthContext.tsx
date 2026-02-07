@@ -59,6 +59,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 setUser(session?.user ?? null);
                 if (session?.user) {
                     await fetchProfile(session.user.id);
+                    // Register for push notifications
+                    try {
+                        const { registerForPushNotificationsAsync } = await import('../lib/notifications');
+                        const token = await registerForPushNotificationsAsync();
+                        if (token) {
+                            await supabase.from('profiles').update({ push_token: token }).eq('id', session.user.id);
+                            console.log("[Auth] Push token saved to profile");
+                        }
+                    } catch (e) {
+                        console.error("[Auth] Failed to register push token:", e);
+                    }
                 }
             } catch (error) {
                 console.error('[Auth] Error getting session:', error);
