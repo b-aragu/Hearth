@@ -12,10 +12,17 @@ import { useNotificationHandler } from "../notifications";
 
 SplashScreen.preventAutoHideAsync();
 
+import { OfflineBanner } from "../components/OfflineBanner";
+
 // Notification wrapper component
 function NotificationWrapper({ children }: { children: React.ReactNode }) {
     useNotificationHandler();
-    return <>{children}</>;
+    return (
+        <>
+            <OfflineBanner />
+            {children}
+        </>
+    );
 }
 
 export default function RootLayout() {

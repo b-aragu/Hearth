@@ -459,6 +459,16 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
         performCheckIn();
     }, [couple?.id]);
 
+    // SCHEDULE DAILY NOTIFICATIONS
+    useEffect(() => {
+        const scheduleReminders = async () => {
+            const { notificationService } = await import('../notifications');
+            await notificationService.scheduleDailyQuestionReminder(9); // 9 AM
+            await notificationService.scheduleStreakReminder(20);       // 8 PM
+        };
+        scheduleReminders();
+    }, []);
+
     return (
         <CreatureContext.Provider
             value={{

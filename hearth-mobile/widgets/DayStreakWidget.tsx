@@ -14,116 +14,71 @@ export function DayStreakWidget({
     creatureName = "Companion",
     isGlowing = false,
 }: DayStreakWidgetProps) {
-    const headerColor = isGlowing ? '#FFF9C4' : '#FFEBEE';
-    const headerText = isGlowing ? '#FBC02D' : '#9C4A5A';
-    const accentColor = isGlowing ? '#FBC02D' : '#D4847C';
-    const containerBg = isGlowing ? '#FFFDE7' : '#FFF0F5';
+    // Locket/Airbuds Aesthetic: Bold, rounded, minimal.
+    // Squircle shape with large number and creature.
+
+    // Dynamic Colors based on Glow
+    const bgColor = isGlowing ? '#FFF9C4' : '#FFFFFF';
+    const textColor = isGlowing ? '#FBC02D' : '#333333';
+    const subTextColor = isGlowing ? '#FBC02D' : '#888888';
+    const borderColor = isGlowing ? '#FBC02D' : '#E5E5E5';
 
     return (
         <FlexWidget
             style={{
                 height: 'match_parent',
                 width: 'match_parent',
-                backgroundColor: containerBg,
-                borderRadius: 24,
+                backgroundColor: bgColor,
+                borderRadius: 22, // Squircle-ish
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                padding: 12,
+                padding: 8,
+                borderWidth: isGlowing ? 2 : 1.5,
+                borderColor: borderColor
             }}
         >
-            {/* Inner Ticket Card */}
+            {/* Top Label (Tiny) */}
+            <TextWidget
+                text={isGlowing ? "⚡ ACTIVE" : "TOGETHER"}
+                style={{
+                    fontSize: 10,
+                    color: subTextColor,
+                    fontWeight: 'bold',
+                    letterSpacing: 1,
+                    marginBottom: 4
+                }}
+            />
+
+            {/* Main Content: Big Number + Creature Side-by-Side or Stacked */}
+            {/* For 2x2, Stacked is usually better for readability of large numbers */}
+
             <FlexWidget
                 style={{
-                    height: 'match_parent',
-                    width: 'match_parent',
-                    backgroundColor: '#FFFFFF',
-                    borderRadius: 20,
                     flexDirection: 'column',
-                    justifyContent: 'flex-start',
                     alignItems: 'center',
-                    padding: 0,
-                    overflow: 'hidden',
+                    justifyContent: 'center'
                 }}
             >
-                {/* 1. Ticket Header (Colored Strip) */}
-                <FlexWidget
+                <TextWidget
+                    text={streak}
                     style={{
-                        width: 'match_parent',
-                        height: 38,
-                        backgroundColor: headerColor,
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'center'
+                        fontSize: 42,
+                        fontWeight: 'bold',
+                        color: textColor,
+                        fontFamily: 'sans-serif-medium',
+                        marginTop: -4
                     }}
-                >
-                    <TextWidget
-                        text={isGlowing ? "⚡ STREAK ACTIVE" : "✨ TOGETHER"}
-                        style={{
-                            fontSize: 10,
-                            color: headerText,
-                            letterSpacing: 2,
-                            fontWeight: 'bold',
-                        }}
-                    />
-                </FlexWidget>
+                />
 
-                {/* 2. Main Content (White Body) */}
-                <FlexWidget
+                {/* Creature Expression */}
+                <TextWidget
+                    text={creature}
                     style={{
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flex: 1, // Fill remaining space
-                        paddingBottom: 8
+                        fontSize: 28,
+                        marginTop: 2
                     }}
-                >
-                    <FlexWidget
-                        style={{
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <TextWidget
-                            text={streak}
-                            style={{
-                                fontSize: 62,
-                                fontWeight: 'bold',
-                                color: accentColor,
-                                fontFamily: 'sans-serif-medium'
-                            }}
-                        />
-                        <TextWidget
-                            text="DAYS"
-                            style={{
-                                fontSize: 13,
-                                color: accentColor,
-                                fontWeight: 'bold',
-                                marginTop: -10,
-                            }}
-                        />
-                    </FlexWidget>
-
-                    {/* Footer Creature (Mood) */}
-                    <FlexWidget
-                        style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            marginTop: 12,
-                            backgroundColor: isGlowing ? '#FFF9C4' : '#FDF2F4',
-                            borderRadius: 10,
-                            paddingHorizontal: 10,
-                            paddingVertical: 5,
-                        }}
-                    >
-                        <TextWidget
-                            text={creature}
-                            style={{
-                                fontSize: 16,
-                            }}
-                        />
-                    </FlexWidget>
-                </FlexWidget>
+                />
             </FlexWidget>
         </FlexWidget>
     );
