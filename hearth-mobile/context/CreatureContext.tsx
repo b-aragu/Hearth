@@ -344,7 +344,7 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
     // WIDGET SYNC
     useEffect(() => {
         if (couple) {
-            const isStreakGlowing = isPartnerOnline && hasAnsweredToday && partnerHasAnsweredToday;
+            const isStreakGlowing = hasAnsweredToday && partnerHasAnsweredToday;
 
             syncWidgetData({
                 streak,

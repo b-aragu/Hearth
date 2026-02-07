@@ -198,7 +198,7 @@ export default function StudioScreen() {
     useEffect(() => {
         // Collapse to show ~120px handle above tab bar (tab bar is 72px + 24px bottom)
         // Panel height is 48% (~400px on most phones), so we translate less to keep handle visible
-        panelTranslateY.value = withSpring(isPanelCollapsed ? 280 : 0, { damping: 15 });
+        panelTranslateY.value = withSpring(isPanelCollapsed ? 280 : 0, { damping: 28, stiffness: 200 });
     }, [isPanelCollapsed]);
 
 
@@ -381,7 +381,7 @@ export default function StudioScreen() {
                                 {ACCESSORY_OPTIONS
                                     .filter(item => selectedCategory === 'all' || item.category === selectedCategory)
                                     .map((item, index) => {
-                                        const isLocked = false; // Testing Mode: All unlocked
+                                        const isLocked = (daysTogether || 1) < item.unlockDay;
                                         return (
                                             <AccessoryItem
                                                 key={item.id}

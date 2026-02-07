@@ -162,7 +162,7 @@ export default function SurpriseScreen() {
                         showsVerticalScrollIndicator={false}
                     >
                         {/* Title */}
-                        <Animated.View entering={SlideInUp.delay(100).springify()}>
+                        <Animated.View entering={SlideInUp.delay(100).springify().damping(20)}>
                             <Text style={{
                                 fontFamily: 'Outfit_700Bold',
                                 fontSize: 28,
@@ -194,7 +194,7 @@ export default function SurpriseScreen() {
                             {GIFT_OPTIONS.map((gift, index) => (
                                 <Animated.View
                                     key={gift.id}
-                                    entering={FadeInUp.delay(150 + index * 50).springify()}
+                                    entering={FadeInUp.delay(150 + index * 50).springify().damping(20)}
                                     style={[
                                         selectedGift === gift.id ? floatStyle : {}
                                     ]}
@@ -277,7 +277,7 @@ export default function SurpriseScreen() {
                         >
                             {/* Animated gift reveal */}
                             <Animated.Text
-                                entering={SlideInUp.springify().damping(8)}
+                                entering={SlideInUp.springify().damping(20)}
                                 style={{ fontSize: 80, marginBottom: 24 }}
                             >
                                 {selectedGiftData?.emoji}

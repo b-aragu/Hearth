@@ -10,7 +10,7 @@ const AnimatedG = Animated.createAnimatedComponent(G);
 import { GlassesRound, HatBeanie, ScarfRed, BowTie } from '../parts/Accessories';
 
 interface CatProps {
-    mood: 'happy' | 'sad' | 'sleepy' | 'neutral';
+    mood: 'happy' | 'sad' | 'sleepy' | 'neutral' | 'loved' | 'excited';
     breathing: SharedValue<number>;
     blink: SharedValue<number>;
     color?: string;
@@ -165,12 +165,24 @@ export const CatModel = ({ mood, breathing, blink, color = '#E0AFA0', accessorie
                                     <Path d={`M ${rightEyeX - 6} ${100 + faceYOffset - 15} Q ${rightEyeX} ${100 + faceYOffset - 20} ${rightEyeX + 6} ${100 + faceYOffset - 15}`} stroke="#4A3B32" strokeWidth="2" strokeLinecap="round" opacity={0.6} />
                                 </G>
                             )}
+                            {mood === 'loved' && (
+                                <G transform={`translate(0, -8)`}>
+                                    <Path d={`M ${leftEyeX - 6} ${100 + faceYOffset - 15} Q ${leftEyeX} ${100 + faceYOffset - 22} ${leftEyeX + 6} ${100 + faceYOffset - 15}`} stroke="#E8B4B8" strokeWidth="2" strokeLinecap="round" />
+                                    <Path d={`M ${rightEyeX - 6} ${100 + faceYOffset - 15} Q ${rightEyeX} ${100 + faceYOffset - 22} ${rightEyeX + 6} ${100 + faceYOffset - 15}`} stroke="#E8B4B8" strokeWidth="2" strokeLinecap="round" />
+                                </G>
+                            )}
+                            {mood === 'excited' && (
+                                <G transform={`translate(0, -10)`}>
+                                    <Path d={`M ${leftEyeX - 6} ${100 + faceYOffset - 12} L ${leftEyeX + 6} ${100 + faceYOffset - 16}`} stroke="#4A3B32" strokeWidth="2" strokeLinecap="round" />
+                                    <Path d={`M ${rightEyeX + 6} ${100 + faceYOffset - 12} L ${rightEyeX - 6} ${100 + faceYOffset - 16}`} stroke="#4A3B32" strokeWidth="2" strokeLinecap="round" />
+                                </G>
+                            )}
 
                             {/* Nose - Tiny pink triangle */}
                             <Path d="M 96 114 Q 100 117 104 114 L 100 118 Z" fill="#F4E1D2" />
 
                             {/* Mouth - 'w' */}
-                            {mood === 'happy' && (
+                            {(mood === 'happy' || mood === 'loved' || mood === 'excited') && (
                                 <Path d="M 100 118 L 100 120 M 94 120 Q 97 124 100 121 Q 103 124 106 120" stroke="#8A6A5C" strokeWidth="1.5" strokeLinecap="round" fill="none" />
                             )}
                             {(mood === 'neutral' || mood === 'sleepy') && (
@@ -198,8 +210,24 @@ export const CatModel = ({ mood, breathing, blink, color = '#E0AFA0', accessorie
 
                             <G {...(isAndroid ? {} : { animatedProps: blinkProps })}>
                                 <G transform={`translate(0, -${100 + faceYOffset})`}>
-                                    <Ellipse cx={leftEyeX} cy={100 + faceYOffset} rx="9" ry="9" fill="#4A3B32" />
-                                    <Ellipse cx={rightEyeX} cy={100 + faceYOffset} rx="9" ry="9" fill="#4A3B32" />
+                                    {mood === 'loved' ? (
+                                        <>
+                                            {/* Heart Eyes 😍 (Adjusted for Cat) */}
+                                            <Path d={`M ${leftEyeX} ${100 + faceYOffset + 3} l -4 -4 q -2 -2 0 -4 q 2 -2 4 0 q 2 -2 4 0 q 2 2 0 4 z`} fill="#E05263" transform={`scale(1.1) translate(${leftEyeX * -0.1 + 8}, ${-(100 + faceYOffset) * 0.1})`} />
+                                            <Path d={`M ${rightEyeX} ${100 + faceYOffset + 3} l -4 -4 q -2 -2 0 -4 q 2 -2 4 0 q 2 -2 4 0 q 2 2 0 4 z`} fill="#E05263" transform={`scale(1.1) translate(${rightEyeX * -0.1 - 8}, ${-(100 + faceYOffset) * 0.1})`} />
+                                        </>
+                                    ) : mood === 'excited' ? (
+                                        <>
+                                            {/* Star Eyes 🤩 */}
+                                            <Path d={`M ${leftEyeX} ${100 + faceYOffset - 8} L ${leftEyeX + 2} ${100 + faceYOffset - 2} L ${leftEyeX + 8} ${100 + faceYOffset} L ${leftEyeX + 2} ${100 + faceYOffset + 2} L ${leftEyeX} ${100 + faceYOffset + 8} L ${leftEyeX - 2} ${100 + faceYOffset + 2} L ${leftEyeX - 8} ${100 + faceYOffset} L ${leftEyeX - 2} ${100 + faceYOffset - 2} Z`} fill="#F4D35E" />
+                                            <Path d={`M ${rightEyeX} ${100 + faceYOffset - 8} L ${rightEyeX + 2} ${100 + faceYOffset - 2} L ${rightEyeX + 8} ${100 + faceYOffset} L ${rightEyeX + 2} ${100 + faceYOffset + 2} L ${rightEyeX} ${100 + faceYOffset + 8} L ${rightEyeX - 2} ${100 + faceYOffset + 2} L ${rightEyeX - 8} ${100 + faceYOffset} L ${rightEyeX - 2} ${100 + faceYOffset - 2} Z`} fill="#F4D35E" />
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Ellipse cx={leftEyeX} cy={100 + faceYOffset} rx="9" ry="9" fill="#4A3B32" />
+                                            <Ellipse cx={rightEyeX} cy={100 + faceYOffset} rx="9" ry="9" fill="#4A3B32" />
+                                        </>
+                                    )}
 
                                     {/* Highlights */}
                                     <Circle cx={leftEyeX + 3} cy={100 + faceYOffset - 3} r="3" fill="white" opacity={0.9} />

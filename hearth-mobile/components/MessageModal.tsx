@@ -118,20 +118,29 @@ export const MessageModal = ({ visible, onClose, partnerName = 'Partner' }: Mess
                 />
 
                 <KeyboardAvoidingView
-                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                    behavior="padding"
+                    style={{ width: '100%' }}
                 >
                     <Animated.View
-                        entering={SlideInDown.springify().damping(18)}
+                        entering={SlideInDown.springify().damping(30).stiffness(300)}
                         exiting={SlideOutDown.duration(200)}
                     >
                         <LinearGradient
-                            colors={['#FFFFFF', '#FFF8F6']}
+                            colors={['#FFFFFF', '#FFF0F3']}
                             style={{
-                                borderTopLeftRadius: 32,
-                                borderTopRightRadius: 32,
-                                paddingTop: 12,
+                                borderTopLeftRadius: 36,
+                                borderTopRightRadius: 36,
+                                paddingTop: 16,
                                 paddingBottom: Platform.OS === 'ios' ? 40 : 24,
-                                paddingHorizontal: 24,
+                                paddingHorizontal: 28,
+                                shadowColor: "#000",
+                                shadowOffset: {
+                                    width: 0,
+                                    height: -4,
+                                },
+                                shadowOpacity: 0.1,
+                                shadowRadius: 12,
+                                elevation: 8,
                             }}
                         >
                             {/* Handle bar */}
@@ -263,14 +272,21 @@ export const MessageModal = ({ visible, onClose, partnerName = 'Partner' }: Mess
                                             maxLength={200}
                                             style={{
                                                 flex: 1,
-                                                backgroundColor: 'rgba(0,0,0,0.04)',
-                                                borderRadius: 18,
-                                                paddingHorizontal: 18,
-                                                paddingVertical: 14,
+                                                backgroundColor: '#FFFFFF',
+                                                borderWidth: 1,
+                                                borderColor: 'rgba(232, 180, 184, 0.3)',
+                                                borderRadius: 24,
+                                                paddingHorizontal: 20,
+                                                paddingVertical: 16,
                                                 fontFamily: 'DMSans_400Regular',
-                                                fontSize: 15,
+                                                fontSize: 16,
                                                 color: COLORS.textPrimary,
-                                                maxHeight: 100,
+                                                maxHeight: 120,
+                                                shadowColor: "#E8B4B8",
+                                                shadowOffset: { width: 0, height: 2 },
+                                                shadowOpacity: 0.1,
+                                                shadowRadius: 4,
+                                                elevation: 2,
                                             }}
                                         />
 

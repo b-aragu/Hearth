@@ -9,7 +9,7 @@ import { GlassesRound, HatBeanie, ScarfRed, BowTie } from '../parts/Accessories'
 const AnimatedG = Platform.OS === 'android' ? G : Animated.createAnimatedComponent(G);
 
 interface BunnyProps {
-    mood: 'happy' | 'sad' | 'sleepy' | 'neutral';
+    mood: 'happy' | 'sad' | 'sleepy' | 'neutral' | 'loved' | 'excited';
     breathing: SharedValue<number>;
     blink: SharedValue<number>;
     color?: string;
@@ -167,7 +167,7 @@ export const BunnyModel = ({ mood, breathing, blink, color = '#E3D7C5', accessor
                             )}
 
                             {/* Mouth */}
-                            {mood === 'happy' && (
+                            {(mood === 'happy' || mood === 'loved' || mood === 'excited') && (
                                 <Path d="M 95 116 Q 100 120 105 116" stroke="#8A6A5C" strokeWidth="2" strokeLinecap="round" fill="none" />
                             )}
                             {(mood === 'neutral' || mood === 'sleepy') && (
@@ -183,27 +183,45 @@ export const BunnyModel = ({ mood, breathing, blink, color = '#E3D7C5', accessor
                         <G transform={`translate(0, ${100 + faceYOffset}) translate(100, ${100 + faceYOffset}) scale(${eyeScale}) translate(-100, -${100 + faceYOffset})`}>
                             <G {...(isAndroid ? {} : { animatedProps: blinkProps })}>
                                 <G transform={`translate(0, -${100 + faceYOffset})`}>
-                                    {/* Standard Eyes */}
-                                    <Circle cx={leftEyeX} cy={95 + faceYOffset} r="6" fill="#4A3B32" />
-                                    <Circle cx={rightEyeX} cy={95 + faceYOffset} r="6" fill="#4A3B32" />
-
-                                    {/* Highlights */}
-                                    <Circle cx={leftEyeX + 1.5} cy={95 + faceYOffset - 1.5} r="2" fill="white" opacity={0.8} />
-                                    <Circle cx={rightEyeX + 1.5} cy={95 + faceYOffset - 1.5} r="2" fill="white" opacity={0.8} />
-
-                                    {/* Mood Specifics */}
-                                    {mood === 'happy' && (
+                                    {mood === 'happy' ? (
                                         <>
                                             {/* Happy Cheeks */}
                                             <Circle cx={leftEyeX - 10} cy={105 + faceYOffset} r="5" fill="#E8B4B8" opacity={0.5} />
                                             <Circle cx={rightEyeX + 10} cy={105 + faceYOffset} r="5" fill="#E8B4B8" opacity={0.5} />
+                                            {/* Arches */}
+                                            <Path d={`M ${leftEyeX - 6} ${95 + faceYOffset + 2} Q ${leftEyeX} ${95 + faceYOffset - 6} ${leftEyeX + 6} ${95 + faceYOffset + 2}`} stroke="#4A3B32" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                                            <Path d={`M ${rightEyeX - 6} ${95 + faceYOffset + 2} Q ${rightEyeX} ${95 + faceYOffset - 6} ${rightEyeX + 6} ${95 + faceYOffset + 2}`} stroke="#4A3B32" strokeWidth="2.5" fill="none" strokeLinecap="round" />
                                         </>
-                                    )}
-                                    {mood === 'sleepy' && (
+                                    ) : mood === 'loved' ? (
                                         <>
+                                            {/* Heart Eyes 😍 */}
+                                            <Path d={`M ${leftEyeX} ${95 + faceYOffset + 3} l -4 -4 q -2 -2 0 -4 q 2 -2 4 0 q 2 -2 4 0 q 2 2 0 4 z`} fill="#E05263" transform={`scale(1.2) translate(${leftEyeX * -0.2 + 2}, ${-(95 + faceYOffset) * 0.2})`} />
+                                            <Path d={`M ${rightEyeX} ${95 + faceYOffset + 3} l -4 -4 q -2 -2 0 -4 q 2 -2 4 0 q 2 -2 4 0 q 2 2 0 4 z`} fill="#E05263" transform={`scale(1.2) translate(${rightEyeX * -0.2 - 2}, ${-(95 + faceYOffset) * 0.2})`} />
+                                        </>
+                                    ) : mood === 'excited' ? (
+                                        <>
+                                            {/* Star Eyes 🤩 */}
+                                            <Path d={`M ${leftEyeX} ${95 + faceYOffset - 8} L ${leftEyeX + 2} ${95 + faceYOffset - 2} L ${leftEyeX + 8} ${95 + faceYOffset} L ${leftEyeX + 2} ${95 + faceYOffset + 2} L ${leftEyeX} ${95 + faceYOffset + 8} L ${leftEyeX - 2} ${95 + faceYOffset + 2} L ${leftEyeX - 8} ${95 + faceYOffset} L ${leftEyeX - 2} ${95 + faceYOffset - 2} Z`} fill="#F4D35E" />
+                                            <Path d={`M ${rightEyeX} ${95 + faceYOffset - 8} L ${rightEyeX + 2} ${95 + faceYOffset - 2} L ${rightEyeX + 8} ${95 + faceYOffset} L ${rightEyeX + 2} ${95 + faceYOffset + 2} L ${rightEyeX} ${95 + faceYOffset + 8} L ${rightEyeX - 2} ${95 + faceYOffset + 2} L ${rightEyeX - 8} ${95 + faceYOffset} L ${rightEyeX - 2} ${95 + faceYOffset - 2} Z`} fill="#F4D35E" />
+                                        </>
+                                    ) : mood === 'sleepy' ? (
+                                        <>
+                                            {/* Standard Eyes */}
+                                            <Circle cx={leftEyeX} cy={95 + faceYOffset} r="6" fill="#4A3B32" />
+                                            <Circle cx={rightEyeX} cy={95 + faceYOffset} r="6" fill="#4A3B32" />
                                             {/* Eyelids */}
                                             <Rect x={leftEyeX - 7} y={95 + faceYOffset - 7} width="14" height="8" fill={color} />
                                             <Rect x={rightEyeX - 7} y={95 + faceYOffset - 7} width="14" height="8" fill={color} />
+                                        </>
+                                    ) : (
+                                        <>
+                                            {/* Standard Eyes */}
+                                            <Circle cx={leftEyeX} cy={95 + faceYOffset} r="6" fill="#4A3B32" />
+                                            <Circle cx={rightEyeX} cy={95 + faceYOffset} r="6" fill="#4A3B32" />
+
+                                            {/* Highlights */}
+                                            <Circle cx={leftEyeX + 1.5} cy={95 + faceYOffset - 1.5} r="2" fill="white" opacity={0.8} />
+                                            <Circle cx={rightEyeX + 1.5} cy={95 + faceYOffset - 1.5} r="2" fill="white" opacity={0.8} />
                                         </>
                                     )}
                                 </G>

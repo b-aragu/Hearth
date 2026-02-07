@@ -9,7 +9,7 @@ import { PenguinModel } from './models/PenguinModel';
 
 interface DynamicCreatureProps {
     creatureId: string;
-    mood?: 'happy' | 'sad' | 'sleepy' | 'neutral' | string;
+    mood?: 'happy' | 'sad' | 'sleepy' | 'neutral' | 'loved' | 'excited' | string;
     scale?: number;
     accessories?: string[];
     daysTogether?: number; // New prop for growth
@@ -64,7 +64,8 @@ export const DynamicCreature = ({
     // Select the correct model
     const renderModel = () => {
         // Map extended moods to supported model moods
-        const visualMood = (mood === 'loved' || mood === 'excited') ? 'happy' : mood as any;
+        // Pass specific moods through to models
+        const visualMood = mood;
 
         switch (creatureId) {
             case 'bear': return <BearModel mood={visualMood} breathing={breathing} blink={blink} accessories={accessories} growthFactor={growthFactor} accessoryColors={accessoryColors} />;

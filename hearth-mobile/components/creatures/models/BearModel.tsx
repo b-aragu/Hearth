@@ -14,7 +14,7 @@ import {
 } from '../parts/Accessories';
 
 interface BearProps {
-    mood: 'happy' | 'sad' | 'sleepy' | 'neutral';
+    mood: 'happy' | 'sad' | 'sleepy' | 'neutral' | 'loved' | 'excited';
     breathing: SharedValue<number>;
     blink: SharedValue<number>;
     color?: string;
@@ -160,9 +160,21 @@ export const BearModel = ({ mood, breathing, blink, color = '#E6CBA8', accessori
                                     <Path d={`M ${rightEyeX - 4} ${95 + eyeYOffset - 10} Q ${rightEyeX} ${95 + eyeYOffset - 14} ${rightEyeX + 4} ${95 + eyeYOffset - 10}`} stroke="#4A3B32" strokeWidth="2" strokeLinecap="round" opacity={0.6} />
                                 </G>
                             )}
+                            {mood === 'loved' && (
+                                <G transform={`translate(0, -8)`}>
+                                    <Path d={`M ${leftEyeX - 4} ${95 + eyeYOffset - 10} Q ${leftEyeX} ${95 + eyeYOffset - 16} ${leftEyeX + 4} ${95 + eyeYOffset - 10}`} stroke="#E8B4B8" strokeWidth="2" strokeLinecap="round" />
+                                    <Path d={`M ${rightEyeX - 4} ${95 + eyeYOffset - 10} Q ${rightEyeX} ${95 + eyeYOffset - 16} ${rightEyeX + 4} ${95 + eyeYOffset - 10}`} stroke="#E8B4B8" strokeWidth="2" strokeLinecap="round" />
+                                </G>
+                            )}
+                            {mood === 'excited' && (
+                                <G transform={`translate(0, -10)`}>
+                                    <Path d={`M ${leftEyeX - 5} ${95 + eyeYOffset - 8} L ${leftEyeX + 5} ${95 + eyeYOffset - 14}`} stroke="#4A3B32" strokeWidth="2" strokeLinecap="round" />
+                                    <Path d={`M ${rightEyeX + 5} ${95 + eyeYOffset - 8} L ${rightEyeX - 5} ${95 + eyeYOffset - 14}`} stroke="#4A3B32" strokeWidth="2" strokeLinecap="round" />
+                                </G>
+                            )}
 
                             {/* MOUTH - Dynamic based on Mood */}
-                            {mood === 'happy' && (
+                            {(mood === 'happy' || mood === 'loved' || mood === 'excited') && (
                                 <Path d="M 94 125 Q 100 132 106 125" stroke="#4A3B32" strokeWidth="2.5" strokeLinecap="round" fill="none" />
                             )}
                             {mood === 'sad' && (
@@ -188,6 +200,18 @@ export const BearModel = ({ mood, breathing, blink, color = '#E6CBA8', accessori
                                             <Path d={`M ${leftEyeX - 7} ${95 + eyeYOffset + 3} Q ${leftEyeX} ${95 + eyeYOffset - 7} ${leftEyeX + 7} ${95 + eyeYOffset + 3}`} stroke="#4A3B32" strokeWidth="3.5" fill="none" strokeLinecap="round" />
                                             <Path d={`M ${rightEyeX - 7} ${95 + eyeYOffset + 3} Q ${rightEyeX} ${95 + eyeYOffset - 7} ${rightEyeX + 7} ${95 + eyeYOffset + 3}`} stroke="#4A3B32" strokeWidth="3.5" fill="none" strokeLinecap="round" />
                                         </>
+                                    ) : mood === 'loved' ? (
+                                        <>
+                                            {/* Heart Eyes 😍 */}
+                                            <Path d={`M ${leftEyeX} ${95 + eyeYOffset + 3} l -4 -4 q -2 -2 0 -4 q 2 -2 4 0 q 2 -2 4 0 q 2 2 0 4 z`} fill="#E05263" transform={`scale(1.2) translate(${leftEyeX * -0.2 + 2}, ${-(95 + eyeYOffset) * 0.2})`} />
+                                            <Path d={`M ${rightEyeX} ${95 + eyeYOffset + 3} l -4 -4 q -2 -2 0 -4 q 2 -2 4 0 q 2 -2 4 0 q 2 2 0 4 z`} fill="#E05263" transform={`scale(1.2) translate(${rightEyeX * -0.2 - 2}, ${-(95 + eyeYOffset) * 0.2})`} />
+                                        </>
+                                    ) : mood === 'excited' ? (
+                                        <>
+                                            {/* Star Eyes 🤩 */}
+                                            <Path d={`M ${leftEyeX} ${95 + eyeYOffset - 8} L ${leftEyeX + 2} ${95 + eyeYOffset - 2} L ${leftEyeX + 8} ${95 + eyeYOffset} L ${leftEyeX + 2} ${95 + eyeYOffset + 2} L ${leftEyeX} ${95 + eyeYOffset + 8} L ${leftEyeX - 2} ${95 + eyeYOffset + 2} L ${leftEyeX - 8} ${95 + eyeYOffset} L ${leftEyeX - 2} ${95 + eyeYOffset - 2} Z`} fill="#F4D35E" />
+                                            <Path d={`M ${rightEyeX} ${95 + eyeYOffset - 8} L ${rightEyeX + 2} ${95 + eyeYOffset - 2} L ${rightEyeX + 8} ${95 + eyeYOffset} L ${rightEyeX + 2} ${95 + eyeYOffset + 2} L ${rightEyeX} ${95 + eyeYOffset + 8} L ${rightEyeX - 2} ${95 + eyeYOffset + 2} L ${rightEyeX - 8} ${95 + eyeYOffset} L ${rightEyeX - 2} ${95 + eyeYOffset - 2} Z`} fill="#F4D35E" />
+                                        </>
                                     ) : mood === 'sleepy' ? (
                                         <>
                                             {/* Sleepy: Half-Lidded Eyes (Droopy look) */}
@@ -195,12 +219,11 @@ export const BearModel = ({ mood, breathing, blink, color = '#E6CBA8', accessori
                                             <Circle cx={leftEyeX} cy={95 + eyeYOffset} r="6" fill="#4A3B32" />
                                             <Circle cx={rightEyeX} cy={95 + eyeYOffset} r="6" fill="#4A3B32" />
 
-                                            {/* Heavy Lids (Skin color cover) - Animated by blink technically, but distinct style */}
-                                            {/* We simply draw a rectangle over the top half of the eye matching the head color */}
+                                            {/* Heavy Lids (Skin color cover) */}
                                             <Rect x={leftEyeX - 8} y={95 + eyeYOffset - 8} width="16" height="9" fill={color} />
                                             <Rect x={rightEyeX - 8} y={95 + eyeYOffset - 8} width="16" height="9" fill={color} />
 
-                                            {/* Lid Line to show they are heavy */}
+                                            {/* Lid Line */}
                                             <Line x1={leftEyeX - 6} y1={95 + eyeYOffset + 1} x2={leftEyeX + 6} y2={95 + eyeYOffset + 1} stroke="#4A3B32" strokeWidth="1" opacity={0.5} />
                                             <Line x1={rightEyeX - 6} y1={95 + eyeYOffset + 1} x2={rightEyeX + 6} y2={95 + eyeYOffset + 1} stroke="#4A3B32" strokeWidth="1" opacity={0.5} />
                                         </>
@@ -260,7 +283,6 @@ export const BearModel = ({ mood, breathing, blink, color = '#E6CBA8', accessori
                     </G>
                 </G>
             </G>
-
-        </Svg >
+        </Svg>
     );
 };

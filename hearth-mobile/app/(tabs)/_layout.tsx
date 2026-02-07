@@ -104,6 +104,11 @@ export default function TabLayout() {
                 ),
                 tabBarShowLabel: false,
             }}
+            screenListeners={{
+                tabPress: () => {
+                    Haptics.selectionAsync();
+                },
+            }}
         >
             <Tabs.Screen
                 name="index"

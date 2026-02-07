@@ -8,7 +8,7 @@ import { GlassesRound, HatBeanie, ScarfRed, BowTie } from '../parts/Accessories'
 const AnimatedG = Animated.createAnimatedComponent(G);
 
 interface PenguinProps {
-    mood: 'happy' | 'sad' | 'sleepy' | 'neutral';
+    mood: 'happy' | 'sad' | 'sleepy' | 'neutral' | 'loved' | 'excited';
     breathing: SharedValue<number>;
     blink: SharedValue<number>;
     color?: string; // Default to black
@@ -128,11 +128,27 @@ export const PenguinModel = ({ mood, breathing, blink, color = '#2C3E50', access
                     <G transform={`translate(100, ${108 + faceYOffset}) scale(${eyeScale}) translate(-100, -${108 + faceYOffset})`}>
                         <G {...(isAndroid ? {} : { animatedProps: blinkProps })}>
                             <G>
-                                <Circle cx={leftEyeX} cy={108 + faceYOffset} r="7" fill="#1E293B" />
-                                <Circle cx={rightEyeX} cy={108 + faceYOffset} r="7" fill="#1E293B" />
+                                {mood === 'loved' ? (
+                                    <>
+                                        {/* Heart Eyes 😍 (Adjusted for Penguin) */}
+                                        <Path d={`M ${leftEyeX} ${108 + faceYOffset + 3} l -4 -4 q -2 -2 0 -4 q 2 -2 4 0 q 2 -2 4 0 q 2 2 0 4 z`} fill="#E05263" transform={`scale(1.1) translate(${leftEyeX * -0.1 + 6}, ${-(108 + faceYOffset) * 0.1})`} />
+                                        <Path d={`M ${rightEyeX} ${108 + faceYOffset + 3} l -4 -4 q -2 -2 0 -4 q 2 -2 4 0 q 2 -2 4 0 q 2 2 0 4 z`} fill="#E05263" transform={`scale(1.1) translate(${rightEyeX * -0.1 - 6}, ${-(108 + faceYOffset) * 0.1})`} />
+                                    </>
+                                ) : mood === 'excited' ? (
+                                    <>
+                                        {/* Star Eyes 🤩 */}
+                                        <Path d={`M ${leftEyeX} ${108 + faceYOffset - 8} L ${leftEyeX + 2} ${108 + faceYOffset - 2} L ${leftEyeX + 8} ${108 + faceYOffset} L ${leftEyeX + 2} ${108 + faceYOffset + 2} L ${leftEyeX} ${108 + faceYOffset + 8} L ${leftEyeX - 2} ${108 + faceYOffset + 2} L ${leftEyeX - 8} ${108 + faceYOffset} L ${leftEyeX - 2} ${108 + faceYOffset - 2} Z`} fill="#F4D35E" />
+                                        <Path d={`M ${rightEyeX} ${108 + faceYOffset - 8} L ${rightEyeX + 2} ${108 + faceYOffset - 2} L ${rightEyeX + 8} ${108 + faceYOffset} L ${rightEyeX + 2} ${108 + faceYOffset + 2} L ${rightEyeX} ${108 + faceYOffset + 8} L ${rightEyeX - 2} ${108 + faceYOffset + 2} L ${rightEyeX - 8} ${108 + faceYOffset} L ${rightEyeX - 2} ${108 + faceYOffset - 2} Z`} fill="#F4D35E" />
+                                    </>
+                                ) : (
+                                    <>
+                                        <Circle cx={leftEyeX} cy={108 + faceYOffset} r="7" fill="#1E293B" />
+                                        <Circle cx={rightEyeX} cy={108 + faceYOffset} r="7" fill="#1E293B" />
 
-                                <Circle cx={leftEyeX + 2} cy={106 + faceYOffset} r="2.5" fill="white" opacity={0.9} />
-                                <Circle cx={rightEyeX + 2} cy={106 + faceYOffset} r="2.5" fill="white" opacity={0.9} />
+                                        <Circle cx={leftEyeX + 2} cy={106 + faceYOffset} r="2.5" fill="white" opacity={0.9} />
+                                        <Circle cx={rightEyeX + 2} cy={106 + faceYOffset} r="2.5" fill="white" opacity={0.9} />
+                                    </>
+                                )}
 
                                 {mood === 'sleepy' && (
                                     <>
@@ -145,7 +161,7 @@ export const PenguinModel = ({ mood, breathing, blink, color = '#2C3E50', access
                     </G>
 
                     {/* MOUTH */}
-                    {mood === 'happy' && (
+                    {(mood === 'happy' || mood === 'loved' || mood === 'excited') && (
                         <Path d={`M 94 ${130 + faceYOffset} Q 100 ${134 + faceYOffset} 106 ${130 + faceYOffset}`} stroke="#EF6C00" strokeWidth="1.5" strokeLinecap="round" fill="none" />
                     )}
 

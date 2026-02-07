@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlexWidget, TextWidget } from 'react-native-android-widget';
+import { FlexWidget, TextWidget, SvgWidget } from 'react-native-android-widget';
 
 export interface PartnerStatusWidgetProps {
     partnerName: string;
@@ -7,28 +7,11 @@ export interface PartnerStatusWidgetProps {
     lastSeen?: string;
 }
 
-const getStatusEmoji = (status: string) => {
-    switch (status) {
-        case 'Online': return '🟢';
-        case 'Sleeping': return '😴';
-        case 'Away': return '🌙';
-        default: return '⚪';
-    }
-};
-
 const getStatusColor = (status: string) => {
     switch (status) {
         case 'Online': return '#4CAF50';
         case 'Sleeping': return '#9C89B8'; // Lavender
         default: return '#B8B8B8';
-    }
-};
-
-const getBorderColor = (status: string) => {
-    switch (status) {
-        case 'Online': return '#4CAF50';
-        case 'Sleeping': return '#C4B8E0';
-        default: return '#E0E0E0';
     }
 };
 
@@ -66,17 +49,29 @@ export function PartnerStatusWidget({
                     padding: 8,
                 }}
             >
-                {/* Status Header */}
-                <TextWidget
-                    text={isOnline ? "ACTIVE NOW" : (lastSeen ? "LAST SEEN" : "CURRENTLY")}
-                    style={{
-                        fontSize: 10,
-                        color: statusColor,
-                        fontWeight: 'bold',
-                        letterSpacing: 1,
-                        marginBottom: 12,
-                    }}
-                />
+                {/* Status Header with Icon */}
+                <FlexWidget style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+                    <SvgWidget
+                        height={10}
+                        width={10}
+                        svgContent={`
+                            <svg width="10" height="10" viewBox="0 0 10 10">
+                                <circle cx="5" cy="5" r="4" fill="${statusColor}" />
+                                ${isOnline ? `<circle cx="5" cy="5" r="5" stroke="${statusColor}" stroke-opacity="0.3" stroke-width="2" />` : ''}
+                            </svg>
+                        `}
+                    />
+                    <TextWidget
+                        text={isOnline ? " ACTIVE NOW" : (lastSeen ? " LAST SEEN" : " CURRENTLY")}
+                        style={{
+                            fontSize: 10,
+                            color: statusColor,
+                            fontWeight: 'bold',
+                            letterSpacing: 1,
+                            marginLeft: 6,
+                        }}
+                    />
+                </FlexWidget>
 
                 {/* Avatar */}
                 <FlexWidget
