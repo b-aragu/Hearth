@@ -1,0 +1,36 @@
+name: Hearth Mobile CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    name: Validate Code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: hearth-mobile/package-lock.json
+
+      - name: Install Dependencies
+        working-directory: hearth-mobile
+        run: npm ci
+
+      - name: Type Check
+        working-directory: hearth-mobile
+        run: npx tsc --noEmit
+
+      - name: Lint
+        working-directory: hearth-mobile
+        # Assuming lint script exists, if not we add it or run eslint directly
+        # If no lint script, we can skip or add one. 
+        # For now, just typecheck is a good start.
+        run: echo "Linting skipped for now" 

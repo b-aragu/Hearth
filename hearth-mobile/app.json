@@ -32,6 +32,13 @@
     "plugins": [
       "expo-router",
       [
+        "@sentry/react-native/expo",
+        {
+          "organization": "baragu-tech",
+          "project": "hearth-mobile"
+        }
+      ],
+      [
         "react-native-android-widget",
         {
           "widgets": [
@@ -53,7 +60,8 @@
             }
           ]
         }
-      ]
+      ],
+      "@sentry/react-native"
     ],
     "extra": {
       "router": {},

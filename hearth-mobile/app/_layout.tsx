@@ -2,8 +2,8 @@ import "../global.css";
 import "../widget-register"; // Register Android widget handlers
 import { Stack } from 'expo-router';
 import { useFonts } from 'expo-font';
-import { Outfit_400Regular, Outfit_700Bold } from '@expo-google-fonts/outfit';
-import { DMSans_400Regular, DMSans_700Bold } from '@expo-google-fonts/dm-sans';
+import { Outfit_400Regular, Outfit_700Bold, Outfit_600SemiBold } from '@expo-google-fonts/outfit';
+import { DMSans_400Regular, DMSans_500Medium, DMSans_700Bold } from '@expo-google-fonts/dm-sans';
 import { useEffect } from "react";
 import * as SplashScreen from 'expo-splash-screen';
 import { AuthProvider } from "../context/AuthContext";
@@ -23,33 +23,29 @@ function NotificationWrapper({ children }: { children: React.ReactNode }) {
     );
 }
 
-const linking = {
-    prefixes: ['hearth://', 'com.baragu.hearthmobile://'],
-    config: {
-        screens: {
-            '(tabs)': {
-                screens: {
-                    index: 'home',
-                    journal: 'memories',
-                    studio: 'style',
-                    settings: 'us',
-                },
-            },
-            'surprise': 'surprise',
-            'onboarding/select-creature': 'onboarding/select-creature',
-            'auth': 'auth',
-        },
-    },
-};
+import * as Sentry from '@sentry/react-native';
 
-export default function RootLayout() {
+import { PostHogProvider } from 'posthog-react-native';
+
+// Initialize Sentry (User must add DSN)
+Sentry.init({
+    dsn: process.env.EXPO_PUBLIC_SENTRY_DSN || '',
+    debug: __DEV__, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
+});
+
+function RootLayout() {
     const [fontsLoaded] = useFonts({
         Outfit_400Regular,
         Outfit_700Bold,
+        Outfit_600SemiBold,
         DMSans_400Regular,
+        DMSans_500Medium,
         DMSans_700Bold,
     });
 
+    useNotificationHandler();
+
+    // Prevent auto-hide until fonts are loaded
     useEffect(() => {
         if (fontsLoaded) {
             SplashScreen.hideAsync();
@@ -61,19 +57,25 @@ export default function RootLayout() {
     }
 
     return (
-        <AuthProvider>
-            <ActionQueueProvider>
-                <CreatureProvider>
-                    <NotificationWrapper>
-                        <Stack screenOptions={{ headerShown: false }}>
-                            <Stack.Screen name="(tabs)" />
-                            <Stack.Screen name="onboarding/select-creature" />
-                            <Stack.Screen name="auth" />
-                        </Stack>
-                    </NotificationWrapper>
-                </CreatureProvider>
-            </ActionQueueProvider>
-        </AuthProvider>
+        <PostHogProvider
+            apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY || ''}
+            options={{
+                host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
+            }}
+        >
+            <AuthProvider>
+                <ActionQueueProvider>
+                    <CreatureProvider>
+                        <NotificationWrapper>
+                            <Stack screenOptions={{ headerShown: false }}>
+                                <Stack.Screen name="(tabs)" />
+                                <Stack.Screen name="onboarding/select-creature" />
+                                <Stack.Screen name="auth" />
+                            </Stack>
+                        </NotificationWrapper>
+                    </CreatureProvider>
+                </ActionQueueProvider>
+            </AuthProvider>
+        </PostHogProvider>
     );
 }
-
