@@ -58,7 +58,7 @@ export async function widgetTaskHandler(props: WidgetTaskHandlerProps) {
             const data = await getWidgetData();
 
             if (widgetInfo.widgetName === 'DayStreak') {
-                props.renderWidget(
+                await props.renderWidget(
                     <DayStreakWidget
                         streak={data.streak.toString()}
                         creature={data.creature}
@@ -66,7 +66,7 @@ export async function widgetTaskHandler(props: WidgetTaskHandlerProps) {
                     />
                 );
             } else if (widgetInfo.widgetName === 'PartnerStatus') {
-                props.renderWidget(
+                await props.renderWidget(
                     <PartnerStatusWidget
                         partnerName={data.partnerName}
                         status={data.partnerStatus}
