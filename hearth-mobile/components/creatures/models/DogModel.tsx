@@ -36,7 +36,7 @@ export const DogModel = ({ mood, breathing, blink, color = '#FFDAC1', accessorie
     // FACE
     const eyeScale = lerp(1.2, 1.0, growthFactor);
     const eyeSpacing = lerp(0.9, 1.0, growthFactor);
-    const faceYOffset = 18; // Push face down for big forehead cuteness
+    const faceYOffset = 0; // Reset offset (Eyes were overlapping muzzle at 18)
 
     // Derived Eye X positions
     const leftEyeX = 100 - (22 * eyeSpacing);
