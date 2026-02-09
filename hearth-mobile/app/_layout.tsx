@@ -9,19 +9,9 @@ import * as SplashScreen from 'expo-splash-screen';
 import { AuthProvider } from "../context/AuthContext";
 import { CreatureProvider } from "../context/CreatureContext";
 import { ActionQueueProvider } from "../context/ActionQueueContext";
-// import { useNotificationHandler } from "../notifications";
 import { OfflineBanner } from "../components/OfflineBanner";
 
-// Notification wrapper component
-// function NotificationWrapper({ children }: { children: React.ReactNode }) {
-//     useNotificationHandler();
-//     return (
-//         <>
-//             <OfflineBanner />
-//             {children}
-//         </>
-//     );
-// }
+
 
 import * as Sentry from '@sentry/react-native';
 
@@ -43,7 +33,7 @@ function RootLayout() {
         DMSans_700Bold,
     });
 
-    // useNotificationHandler();
+
 
     // Prevent auto-hide until fonts are loaded
     useEffect(() => {
@@ -66,14 +56,12 @@ function RootLayout() {
             <AuthProvider>
                 <ActionQueueProvider>
                     <CreatureProvider>
-                        {/* <NotificationWrapper> */}
                         <OfflineBanner />
                         <Stack screenOptions={{ headerShown: false }}>
                             <Stack.Screen name="(tabs)" />
                             <Stack.Screen name="onboarding/select-creature" />
                             <Stack.Screen name="auth" />
                         </Stack>
-                        {/* </NotificationWrapper> */}
                     </CreatureProvider>
                 </ActionQueueProvider>
             </AuthProvider>

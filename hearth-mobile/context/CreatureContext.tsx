@@ -5,24 +5,8 @@ import { useAuth } from './AuthContext';
 import { differenceInDays, startOfDay, formatDistanceToNow, differenceInHours } from 'date-fns';
 import { syncWidgetData } from '../widgets/WidgetSync';
 
-interface CoupleData {
-    id: string;
-    partner1_id: string;
-    partner2_id: string | null;
-    creature_type: CreatureType;
-    invite_code: string;
-    p1_choice: CreatureType | null;
-    p2_choice: CreatureType | null;
-    p1_name_choice: string | null;
-    p2_name_choice: string | null;
-    creature_name: string | null;
-    matched_at: string | null;
-    accessories?: string[]; // New field
-    accessory_colors?: Record<string, string>; // New field
-    last_petted_at?: string; // New synced field
-    daily_tap_count?: { partner1: number; partner2: number; date: string }; // New synced field
-    room_theme?: string; // Room theme/style customization
-}
+import { useCreatureData, CoupleData } from '../hooks/useCreatureData';
+import { GAME_CONFIG } from '../constants/game-config';
 
 interface ProfileData {
     id: string;
@@ -57,8 +41,9 @@ const CreatureContext = createContext<CreatureContextType | undefined>(undefined
 export function CreatureProvider({ children }: { children: ReactNode }) {
     const { user } = useAuth();
     const [selectedCreature, setSelectedCreature] = useState<CreatureType>('bear');
-    const [couple, setCouple] = useState<CoupleData | null>(null);
-    const [loading, setLoading] = useState(true);
+
+    // Use the new hook for data persistence
+    const { couple, loading, refreshCouple, updateLocalCouple } = useCreatureData(user?.id);
 
     // Stats
     const [daysTogether, setDaysTogether] = useState(0);
@@ -93,14 +78,14 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
 
     const updateAccessories = async (items: string[]) => {
         if (!couple) return;
-        setCouple(prev => prev ? { ...prev, accessories: items } : null);
+        updateLocalCouple({ accessories: items });
         const { error } = await supabase.from('couples').update({ accessories: items }).eq('id', couple.id);
         if (error) console.error('Failed to update accessories:', error);
     };
 
     const saveAccessories = async (items: string[], colors: Record<string, string>) => {
         if (!couple || !user) return;
-        setCouple(prev => prev ? { ...prev, accessories: items, accessory_colors: colors } : null);
+        updateLocalCouple({ accessories: items, accessory_colors: colors });
 
         try {
             const { error } = await supabase
@@ -124,7 +109,8 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
             if (memError) console.error("Memory Log Error:", memError);
         } catch (err) {
             console.error('Failed to save accessories in Context:', err);
-            setCouple(prev => prev);
+            // Revert is hard without previous state, but we rely on refresh
+            refreshCouple();
             throw err;
         }
     };
@@ -152,7 +138,9 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
 
         const totalTaps = newCounts.partner1 + newCounts.partner2;
 
-        setCouple(prev => prev ? { ...prev, daily_tap_count: newCounts, last_petted_at: now } : null);
+
+
+        updateLocalCouple({ daily_tap_count: newCounts, last_petted_at: now });
 
         try {
             const { error } = await supabase
@@ -162,8 +150,7 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
 
             if (error) throw error;
 
-            const milestones = [10, 50, 100];
-            if (milestones.includes(totalTaps)) {
+            if (GAME_CONFIG.TAPS.MILESTONES.includes(totalTaps)) {
                 await createTapMilestoneMemory(totalTaps, couple.id);
             }
         } catch (err) {
@@ -172,13 +159,7 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
     };
 
     const createTapMilestoneMemory = async (taps: number, coupleId: string) => {
-        const messages: Record<number, { title: string; desc: string; emoji: string }> = {
-            10: { title: "Feeling Loved! 💕", desc: "You two have tapped your creature 10 times today!", emoji: "☺️" },
-            50: { title: "Cuddle Party! 🧸", desc: "50 taps! Your creature is overwhelming with joy.", emoji: "🥰" },
-            100: { title: "Maximum Love! 💖", desc: "100 taps! That's true dedication.", emoji: "🔥" }
-        };
-
-        const msg = messages[taps];
+        const msg = GAME_CONFIG.TAPS.MESSAGES[taps];
         if (!msg) return;
 
         await supabase.from('memories').insert({
@@ -192,95 +173,83 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
         });
     };
 
-    const fetchCouple = async () => {
-        if (!user) {
-            setLoading(false);
-            return;
-        }
+    // Logic to update derived state (stats, names) when couple data changes
+    useEffect(() => {
+        const updateDerivedState = async () => {
+            if (!couple || !user) return;
 
-        try {
-            const { data, error } = await supabase
-                .from('couples')
-                .select('*')
-                .or(`partner1_id.eq.${user.id},partner2_id.eq.${user.id}`)
-                .single();
+            setSelectedCreature((couple.creature_type as CreatureType) || 'bunny');
 
-            if (data) {
-                setCouple({ ...data }); // Ensure new object ref
-                setSelectedCreature((data.creature_type as CreatureType) || 'bunny');
+            const { data: uData } = await supabase.from('profiles').select('display_name').eq('id', user.id).single();
+            if (uData?.display_name) setUserName(uData.display_name);
 
-                const { data: uData } = await supabase.from('profiles').select('display_name').eq('id', user.id).single();
-                if (uData?.display_name) setUserName(uData.display_name);
+            if (couple.matched_at) {
+                const start = new Date(couple.matched_at);
+                const now = new Date();
+                setDaysTogether(differenceInDays(now, start) + 1);
+            }
 
-                if (data.matched_at) {
-                    const start = new Date(data.matched_at);
-                    const now = new Date();
-                    setDaysTogether(differenceInDays(now, start) + 1);
-                }
-
-                const partnerId = data.partner1_id === user.id ? data.partner2_id : data.partner1_id;
-                if (partnerId) {
-                    const { data: pData } = await supabase.from('profiles').select('display_name, last_active_at').eq('id', partnerId).single();
-                    if (pData) {
-                        if (pData.display_name) setPartnerName(pData.display_name);
-                        if (pData.last_active_at) {
-                            setPartnerLastSeen(pData.last_active_at);
-                            const now = new Date();
-                            const diffMins = (now.getTime() - new Date(pData.last_active_at).getTime()) / 60000;
-                            setIsPartnerOnline(diffMins < 5);
-                        }
+            const partnerId = couple.partner1_id === user.id ? couple.partner2_id : couple.partner1_id;
+            if (partnerId) {
+                // ... (Fetch partner profile logic remains similar or can be moved to a hook)
+                const { data: pData } = await supabase.from('profiles').select('display_name, last_active_at').eq('id', partnerId).single();
+                if (pData) {
+                    if (pData.display_name) setPartnerName(pData.display_name);
+                    if (pData.last_active_at) {
+                        setPartnerLastSeen(pData.last_active_at);
+                        const now = new Date();
+                        const diffMins = (now.getTime() - new Date(pData.last_active_at).getTime()) / 60000;
+                        setIsPartnerOnline(diffMins < GAME_CONFIG.PRESENCE.ONLINE_THRESHOLD_MINUTES);
                     }
-
-                    const today = new Date().toISOString().split('T')[0];
-                    const { data: checkin } = await supabase
-                        .from('daily_checkins')
-                        .select('id')
-                        .eq('user_id', partnerId)
-                        .eq('checkin_date', today)
-                        .maybeSingle();
-
-                    setPartnerCheckedIn(!!checkin);
                 }
 
-                // Daily Ritual Status
                 const today = new Date().toISOString().split('T')[0];
-                const { data: ritual } = await supabase
-                    .from('daily_rituals')
-                    .select('partner1_response, partner2_response')
-                    .eq('couple_id', data.id)
-                    .eq('date', today)
+                const { data: checkin } = await supabase
+                    .from('daily_checkins')
+                    .select('id')
+                    .eq('user_id', partnerId)
+                    .eq('checkin_date', today)
                     .maybeSingle();
 
-                if (ritual) {
-                    const isP1 = data.partner1_id === user.id;
-                    setHasAnsweredToday(!!(isP1 ? ritual.partner1_response : ritual.partner2_response));
-                    setPartnerHasAnsweredToday(!!(isP1 ? ritual.partner2_response : ritual.partner1_response));
-                }
-
-                // Checkins
-                const { error: checkinError } = await supabase
-                    .from('daily_checkins')
-                    .upsert({ couple_id: data.id, user_id: user.id, checkin_date: today }, { onConflict: 'user_id, checkin_date' });
-                if (checkinError) console.log("Checkin Error:", checkinError);
-                updatePresence();
-
-                const { data: checkins } = await supabase
-                    .from('daily_checkins')
-                    .select('checkin_date, user_id')
-                    .eq('couple_id', data.id)
-                    .order('checkin_date', { ascending: false });
-
-                if (checkins) {
-                    const dates = new Set(checkins.map(c => c.checkin_date));
-                    setStreak(dates.size);
-                }
+                setPartnerCheckedIn(!!checkin);
             }
-        } catch (error) {
-            console.error('[CreatureContext] Error fetching creature context:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
+
+            // Daily Ritual Status
+            const today = new Date().toISOString().split('T')[0];
+            const { data: ritual } = await supabase
+                .from('daily_rituals')
+                .select('partner1_response, partner2_response')
+                .eq('couple_id', couple.id)
+                .eq('date', today)
+                .maybeSingle();
+
+            if (ritual) {
+                const isP1 = couple.partner1_id === user.id;
+                setHasAnsweredToday(!!(isP1 ? ritual.partner1_response : ritual.partner2_response));
+                setPartnerHasAnsweredToday(!!(isP1 ? ritual.partner2_response : ritual.partner1_response));
+            }
+
+            // Checkins
+            const { error: checkinError } = await supabase
+                .from('daily_checkins')
+                .upsert({ couple_id: couple.id, user_id: user.id, checkin_date: today }, { onConflict: 'user_id, checkin_date' });
+            if (checkinError) console.log("Checkin Error:", checkinError);
+            updatePresence();
+
+            const { data: checkins } = await supabase
+                .from('daily_checkins')
+                .select('checkin_date, user_id')
+                .eq('couple_id', couple.id)
+                .order('checkin_date', { ascending: false });
+
+            if (checkins) {
+                const dates = new Set(checkins.map(c => c.checkin_date));
+                setStreak(dates.size);
+            }
+        };
+
+        updateDerivedState();
+    }, [couple, user]);
 
     // MOOD CALCULATION LOOP
     useEffect(() => {
@@ -296,21 +265,21 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
             // Neglect (24h)
             if (couple?.last_petted_at) {
                 const hoursSincePet = differenceInHours(now, new Date(couple.last_petted_at));
-                if (hoursSincePet >= 24) {
+                if (hoursSincePet >= GAME_CONFIG.MOOD.NEGLECT_HOURS) {
                     setCreatureMood('sad');
                     return;
                 }
             }
 
             // Sleepy (9 PM - 6 AM)
-            if (hour >= 21 || hour < 6) {
+            if (hour >= GAME_CONFIG.MOOD.SLEEP_START_HOUR || hour < GAME_CONFIG.MOOD.SLEEP_END_HOUR) {
                 setCreatureMood('sleepy');
                 return;
             }
 
             // Excited (>20 taps)
             const totalTaps = (couple?.daily_tap_count?.partner1 || 0) + (couple?.daily_tap_count?.partner2 || 0);
-            if (totalTaps > 20) {
+            if (totalTaps > GAME_CONFIG.MOOD.EXCITED_TAPS_THRESHOLD) {
                 setCreatureMood('excited');
                 return;
             }
@@ -324,22 +293,22 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
     }, [temporaryMood, couple?.last_petted_at, couple?.daily_tap_count]);
 
 
+    // Real-time subscription for couple data
     useEffect(() => {
-        fetchCouple();
-
-        if (!user) return;
+        if (!user || !couple?.id) return;
 
         const subscription = supabase
             .channel('couple_changes')
             .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'couples' }, (payload) => {
-                if (payload.new.id === couple?.id || (payload.new.partner1_id === user.id || payload.new.partner2_id === user.id)) {
-                    setCouple(payload.new as CoupleData);
+                if (payload.new.id === couple?.id) {
+                    // Update cache via hook
+                    updateLocalCouple(payload.new as CoupleData);
                 }
             })
             .subscribe();
 
         return () => { supabase.removeChannel(subscription); };
-    }, [user, couple?.id]);
+    }, [user, couple?.id, updateLocalCouple]);
 
     // WIDGET SYNC
     useEffect(() => {
@@ -424,12 +393,12 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
                     setPartnerLastSeen(payload.new.last_active_at);
                     const now = new Date();
                     const diffMins = (now.getTime() - new Date(payload.new.last_active_at).getTime()) / 60000;
-                    setIsPartnerOnline(diffMins < 5);
+                    setIsPartnerOnline(diffMins < GAME_CONFIG.PRESENCE.ONLINE_THRESHOLD_MINUTES);
                 }
             })
             .subscribe();
 
-        const heartbeat = setInterval(() => { updatePresence(); }, 60000);
+        const heartbeat = setInterval(() => { updatePresence(); }, GAME_CONFIG.PRESENCE.HEARTBEAT_INTERVAL_MS);
         updatePresence();
 
         return () => {
@@ -475,7 +444,7 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
                 selectedCreature,
                 couple,
                 loading,
-                refreshCouple: fetchCouple,
+                refreshCouple, // Use hook's refresh
                 setCreature: setSelectedCreature,
                 daysTogether,
                 streak,
@@ -488,7 +457,7 @@ export function CreatureProvider({ children }: { children: ReactNode }) {
                 recordTap,
                 updateRoom: async (roomId: string) => {
                     if (!couple) return;
-                    setCouple(prev => prev ? { ...prev, room_theme: roomId } : null);
+                    updateLocalCouple({ room_theme: roomId });
                     try {
                         const { error } = await supabase.from('couples').update({ room_theme: roomId }).eq('id', couple.id);
                         if (error) console.error('[CreatureContext] DB Update Failed:', error);
