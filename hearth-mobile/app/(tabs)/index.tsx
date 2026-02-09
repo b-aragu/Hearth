@@ -25,6 +25,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { COLORS, SHADOWS, GRADIENTS, createCustomShadow, createCustomGlow } from '../../constants/theme';
 import { MessageModal } from '../../components/MessageModal';
+import { Skeleton } from '../../components/ui/Skeleton';
 
 const { width, height } = Dimensions.get('window');
 
@@ -165,11 +166,13 @@ const HeaderCard = ({
     partnerName,
     streak,
     isPartnerOnline,
+    loading = false,
 }: {
     userName: string;
     partnerName: string;
     streak: number;
     isPartnerOnline: boolean;
+    loading?: boolean;
 }) => {
     // Floating hearts animation
     const heart1 = useSharedValue(0);
@@ -236,30 +239,40 @@ const HeaderCard = ({
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                     {/* User Avatar */}
                     <View style={{ alignItems: 'center' }}>
-                        <View
-                            style={{
-                                width: 40,
-                                height: 40,
-                                borderRadius: 20,
-                                backgroundColor: '#7C9A92',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                borderWidth: 2,
-                                borderColor: '#fff',
-                            }}
-                        >
-                            <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 17, color: '#fff' }}>
-                                {userName.charAt(0).toUpperCase()}
-                            </Text>
+                        {loading ? (
+                            <Skeleton width={40} height={40} borderRadius={20} />
+                        ) : (
+                            <View
+                                style={{
+                                    width: 40,
+                                    height: 40,
+                                    borderRadius: 20,
+                                    backgroundColor: '#7C9A92',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    borderWidth: 2,
+                                    borderColor: '#fff',
+                                }}
+                            >
+                                <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 17, color: '#fff' }}>
+                                    {userName.charAt(0).toUpperCase()}
+                                </Text>
+                            </View>
+                        )}
+                        <View style={{ marginTop: 3 }}>
+                            {loading ? (
+                                <Skeleton width={50} height={12} borderRadius={4} />
+                            ) : (
+                                <Text style={{ fontFamily: 'Outfit_600SemiBold', fontSize: 11, color: COLORS.textPrimary }}>
+                                    {userName}
+                                </Text>
+                            )}
                         </View>
-                        <Text style={{ fontFamily: 'Outfit_600SemiBold', fontSize: 11, color: COLORS.textPrimary, marginTop: 3 }}>
-                            {userName}
-                        </Text>
                     </View>
 
                     {/* Hearts + Streak Inline */}
                     <View style={{ alignItems: 'center', paddingHorizontal: 12 }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3, opacity: loading ? 0 : 1 }}>
                             <Animated.View style={heart1Style}>
                                 <Heart size={12} color="#E88A8A" fill="#E88A8A" />
                             </Animated.View>
@@ -270,37 +283,51 @@ const HeaderCard = ({
                                 <Heart size={12} color="#E88A8A" fill="#E88A8A" />
                             </Animated.View>
                         </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4, backgroundColor: 'rgba(255, 154, 86, 0.15)', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 10 }}>
-                            <Flame size={12} color="#E8734A" fill="#FF9A56" />
-                            <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 11, color: '#E8734A', marginLeft: 4 }}>
-                                {streak} days
-                            </Text>
-                        </View>
+                        {loading ? (
+                            <Skeleton width={60} height={24} borderRadius={10} style={{ marginTop: 4 }} />
+                        ) : (
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4, backgroundColor: 'rgba(255, 154, 86, 0.15)', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 10 }}>
+                                <Flame size={12} color="#E8734A" fill="#FF9A56" />
+                                <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 11, color: '#E8734A', marginLeft: 4 }}>
+                                    {streak} days
+                                </Text>
+                            </View>
+                        )}
                     </View>
 
                     {/* Partner Avatar */}
                     <View style={{ alignItems: 'center' }}>
-                        <View
-                            style={{
-                                width: 40,
-                                height: 40,
-                                borderRadius: 20,
-                                backgroundColor: '#D4A5C9',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                borderWidth: 2,
-                                borderColor: '#fff',
-                            }}
-                        >
-                            <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 17, color: '#fff' }}>
-                                {partnerName.charAt(0).toUpperCase()}
-                            </Text>
+                        {loading ? (
+                            <Skeleton width={40} height={40} borderRadius={20} />
+                        ) : (
+                            <View
+                                style={{
+                                    width: 40,
+                                    height: 40,
+                                    borderRadius: 20,
+                                    backgroundColor: '#D4A5C9',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    borderWidth: 2,
+                                    borderColor: '#fff',
+                                }}
+                            >
+                                <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 17, color: '#fff' }}>
+                                    {partnerName.charAt(0).toUpperCase()}
+                                </Text>
+                            </View>
+                        )}
+                        <View style={{ marginTop: 3 }}>
+                            {loading ? (
+                                <Skeleton width={50} height={12} borderRadius={4} />
+                            ) : (
+                                <Text style={{ fontFamily: 'Outfit_600SemiBold', fontSize: 11, color: COLORS.textPrimary }}>
+                                    {partnerName}
+                                </Text>
+                            )}
                         </View>
-                        <Text style={{ fontFamily: 'Outfit_600SemiBold', fontSize: 11, color: COLORS.textPrimary, marginTop: 3 }}>
-                            {partnerName}
-                        </Text>
                         {/* Online Indicator */}
-                        {isPartnerOnline && (
+                        {!loading && isPartnerOnline && (
                             <View style={{
                                 position: 'absolute',
                                 top: 0,
@@ -602,7 +629,8 @@ export default function HomeScreen() {
         partnerLastSeen,
         creatureMood,
         setTemporaryMood,
-        recordTap
+        recordTap,
+        loading // Get loading state
     } = useCreature();
     const { profile, signOut } = useAuth();
     const router = useRouter();
@@ -766,6 +794,7 @@ export default function HomeScreen() {
                             partnerName={partnerName}
                             streak={streak || 0}
                             isPartnerOnline={isPartnerOnline}
+                            loading={loading}
                         />
 
 
