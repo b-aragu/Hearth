@@ -21,15 +21,16 @@ interface NotificationPayload {
 }
 
 // Configure how notifications appear when app is foregrounded
-Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: true,
-        shouldShowBanner: true,
-        shouldShowList: true,
-    }),
-});
+// Configure how notifications appear when app is foregrounded
+// Notifications.setNotificationHandler({
+//     handleNotification: async () => ({
+//         shouldShowAlert: true,
+//         shouldPlaySound: true,
+//         shouldSetBadge: true,
+//         shouldShowBanner: true,
+//         shouldShowList: true,
+//     }),
+// });
 
 class NotificationService {
     private expoPushToken: string | null = null;

@@ -1,13 +1,14 @@
 {
   "expo": {
-    "name": "hearth-mobile",
-    "slug": "hearth-mobile",
+    "name": "Hearth",
+    "slug": "hearth",
     "scheme": "hearth",
     "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
+    "developmentClient": false,
     "userInterfaceStyle": "light",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "cover",
@@ -67,7 +68,12 @@
           "android": {
             "compileSdkVersion": 35,
             "targetSdkVersion": 35,
-            "kotlinVersion": "1.9.24"
+            "kotlinVersion": "2.0.21",
+            "extraGradleProps": {
+              "android.enableMinifyInReleaseBuilds": "false",
+              "android.enableR8.fullMode": "false",
+              "expo.useLegacyPackaging": "true"
+            }
           },
           "ios": {
             "deploymentTarget": "15.1"

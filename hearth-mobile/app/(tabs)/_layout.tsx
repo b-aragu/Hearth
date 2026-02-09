@@ -2,6 +2,7 @@ import { Tabs, Redirect } from 'expo-router';
 import { View, Text, Platform, StyleSheet, Pressable, ActivityIndicator } from 'react-native'; // Added ActivityIndicator
 import { BlurView } from 'expo-blur';
 import { Home, BookOpen, Palette, Settings } from 'lucide-react-native';
+import * as Haptics from 'expo-haptics';
 import Animated, {
     useAnimatedStyle,
     withSpring,
